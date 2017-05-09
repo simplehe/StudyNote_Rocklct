@@ -31,7 +31,7 @@ Number n = 0;
 Class<? extends Number> c = n.getClass(); // class java.lang.Integer
 ```
 
-### hasCode方法
+### hashCode方法
 hashCode方法也是一个native方法。
 
 该方法返回对象的哈希码，主要使用在哈希表中，比如JDK中的HashMap。
@@ -111,4 +111,60 @@ notify方法只能被作为此对象监视器的所有者的线程来调用。�
 
 一次只能有一个线程拥有对象的监视器。
 
-如果当前线程不是此对象监视器的所有者的话会抛出IllegalMonitorStateException异常
+**如果当前线程不是此对象监视器的所有者的话会抛出IllegalMonitorStateException异常**
+
+### notifyAll方法
+跟notify一样，唯一的区别就是会唤醒在此对象监视器上等待的所有线程，而不是一个线程。
+
+同样，如果当前线程不是对象监视器的所有者，那么调用notifyAll同样会发生IllegalMonitorStateException异常。
+
+以下这段代码直接调用notify或者notifyAll方法会发生IllegalMonitorStateException异常，这是因为调用这两个方法需要当前线程是对象监视器的所有者：
+``` java
+Factory factory = new Factory();
+factory.notify();
+factory.notifyAll();
+```
+
+### wait(long timeout) throws InterruptedException方法
+wait(long timeout)方法同样是一个native方法，并且也是final的，不允许子类重写。
+
+wait方法会让当前线程等待直到另外一个线程调用对象的notify或notifyAll方法，或者超过参数设置的timeout超时时间。
+
+跟notify和notifyAll方法一样，当前线程必须是此对象的监视器所有者，否则还是会发生IllegalMonitorStateException异常。
+
+wait方法会让当前线程(我们先叫做线程T)将其自身放置在对象的等待集中，并且放弃该对象上的所有同步要求。出于线程调度目的，线程T是不可用并处于休眠状态，直到发生以下四件事中的任意一件：
+
+1. 其他某个线程调用此对象的notify方法，并且线程T碰巧被任选为被唤醒的线程
+2. 其他某个线程调用此对象的notifyAll方法
+3. 其他某个线程调用Thread.interrupt方法中断线程T
+4. 时间到了参数设置的超时时间。如果timeout参数为0，则不会超时，会一直进行等待
+
+
+所以可以理解wait方法相当于放弃了当前线程对对象监视器的所有者(也就是说释放了对象的锁)
+
+之后，线程T会被等待集中被移除，并且重新进行线程调度。然后，该线程以常规方式与其他线程竞争，以获得在该对象上同步的权利；一旦获得对该对象的控制权，该对象上的所有其同步声明都将被恢复到以前的状态，这就是调用wait方法时的情况。然后，线程T从wait方法的调用中返回。所以，从wait方法返回时，该对象和线程T的同步状态与调用wait方法时的情况完全相同。
+
+在没有被通知、中断或超时的情况下，线程还可以唤醒一个所谓的虚假唤醒 (spurious wakeup)。虽然这种情况在实践中很少发生，但是应用程序必须通过以下方式防止其发生，即对应该导致该线程被提醒的条件进行测试，如果不满足该条件，则继续等待。换句话说，等待应总是发生在循环中，如下面的示例：
+``` java
+synchronized (obj) {
+    while (<condition does not hold>)
+        obj.wait(timeout);
+        ... // Perform action appropriate to condition
+}
+```
+
+如果当前线程在等待之前或在等待时被任何线程中断，则会抛出InterruptedException异常。在按上述形式恢复此对象的锁定状态时才会抛出此异常。
+
+### wait(long timeout, int nanos) throws InterruptedException方法
+
+跟wait(long timeout)方法类似，多了一个nanos参数，这个参数表示额外时间（以毫微秒为单位，范围是 0-999999）。 所以超时的时间还需要加上nanos毫秒。
+
+需要注意的是 wait(0, 0)和wait(0)效果是一样的，即一直等待。
+
+### wait() throws InterruptedException方法
+跟之前的2个wait方法一样，只不过该方法一直等待，没有超时时间这个概念。
+
+### finalize方法
+finalize方法是一个protected方法，Object类的默认实现是不进行任何操作。
+
+该方法的作用是实例被垃圾回收器回收的时候触发的操作，就好比 “死前的最后一波挣扎”。
