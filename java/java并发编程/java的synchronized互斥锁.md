@@ -21,6 +21,13 @@ class ClassName {
 
 可知道这种方法锁住类，其实只是锁住了class对象，从而控制了你静态方法的同步。
 
+简而言之，**类锁实际上用对象锁来实现**。当虚拟机装载一个class文件的时候，它就会创建一个java.lang.Class类的实例。当锁住一个对象的时候，实际上锁住的是那个类的Class对象。
+
+synchronized修饰非静态方法、同步代码块的synchronized (this)用法和synchronized (非this对象)的用法锁的是对象，线程想要执行对应同步代码，需要获得对象锁。
+
+synchronized修饰静态方法以及同步代码块的synchronized (类.class)用法锁的是类，线程想要执行对应同步代码，需要获得类锁。
+
+
 另外，有几点需要注意：
  - 在定义接口方法时不能使用synchronized关键字。
  - 构造方法不能使用synchronized关键字，但可以使用synchronized代码块来进行同步。
