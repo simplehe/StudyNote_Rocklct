@@ -19,7 +19,7 @@ public class HashMap<K,V>
 
 ![](image/hashmap.png)
 
-这么做一个比较重要的因素便是，可以进行拉链法解决冲突了。
+这么做一个比较重要的因素便是，可以进行拉链法解决冲突了。注意这个拉链法，是每次把最新更新的元素放到链表头的。
 
 看下源码
 ``` java
@@ -94,6 +94,8 @@ static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
 可以看到，默认的平衡因子为0.75，这是权衡了时间复杂度与空间复杂度之后的最好取值（JDK说是最好的），过高的因子会降低存储空间但是查找（lookup，包括HashMap中的put与get方法）的时间就会增加。
 
+平衡因子的话，是用来resize整个hash表的，如果条目的数量超过了treshhold=capacity*loadFactor,则整个hash表就会进行扩容，也就是容量翻倍。
+
 这里比较奇怪的是问题：容量必须为**2的指数倍**（默认为16），这是为什么呢？解答这个问题，需要了解HashMap中哈希函数的设计原理。
 
 
@@ -148,3 +150,13 @@ static final float DEFAULT_LOAD_FACTOR = 0.75f;
 最后，通过一系列无符号右移操作，来把高位与低位进行异或操作，来降低冲突发生的几率
 
 右移的偏移量20，12，7，4是怎么来的呢？因为Java中对象的哈希值都是32位的，所以这几个数应该就是把高位与低位做异或运算，至于这几个数是如何选取的，就不清楚了
+
+put函数的过程暂且不细说，现在来看下resize函数一个很巧妙的地方
+
+当put时，如果发现目前的bucket占用程度已经超过了Load Factor所希望的比例，那么就会发生resize。在resize的过程，简单的说就是把bucket扩充为2倍，之后重新计算index，把节点再放到新的bucket中。
+
+这一点我们要理解，扩容之后，必须要重新计算index值，也就是上文提到的hashcode \&\& (length-1)
+
+因为length变成了两倍，二进制里多出了一个最高位1.这个时候没必要大费周章再去计算一边新的hash值，只需要检查一下hashcode里，对应的那个最高位是1还是0.0的话，index值保持不变，1的话，就用原hash+old_capacity
+
+![](image/hashmap2.png)
