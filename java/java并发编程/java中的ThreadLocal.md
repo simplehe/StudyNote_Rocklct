@@ -109,3 +109,32 @@ void createMap(Thread t, T firstValue) {
 
 #### 对象存放在哪里
 每个Thread被创建后，其实都有它自己的作用域，换而言之就是产生一个线程的私有栈帧，栈帧当然是存放在栈内存当中。栈帧是线程私有。
+
+#### 内存泄露
+ThreadLocal并不会产生内存泄露，因为ThreadLocalMap在选择key的时候，并不是直接选择ThreadLocal实例，而是ThreadLocal实例的**弱引用**。
+
+看以下ThreadLocalMap的源码
+
+``` java
+static class ThreadLocalMap {
+
+/**
+* The entries in this hash map extend WeakReference, using
+* its main ref field as the key (which is always a
+* ThreadLocal object).  Note that null keys (i.e. entry.get()
+* == null) mean that the key is no longer referenced, so the
+* entry can be expunged from table.  Such entries are referred to
+* as "stale entries" in the code that follows.
+*/
+    static class Entry extends WeakReference<ThreadLocal<?>> {
+        /** The value associated with this ThreadLocal. */
+        Object value;
+
+        Entry(ThreadLocal<?> k, Object v) {
+            super(k);
+            value = v;
+        }
+    }
+}
+```
+所以实际上从ThreadLocal设计角度来说是不会导致内存泄露的。
