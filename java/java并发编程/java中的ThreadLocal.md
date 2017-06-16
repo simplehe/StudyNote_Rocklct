@@ -137,4 +137,4 @@ static class ThreadLocalMap {
     }
 }
 ```
-所以实际上从ThreadLocal设计角度来说是不会导致内存泄露的。
+所以实际上从ThreadLocal设计角度来说是**不会导致内存泄露的**。
