@@ -3,7 +3,7 @@ Condition是在Java 1.5中才出现的，它用来替代传统的Object的wait()
 
  - Condition是个接口，基本的方法就是await()和signal()方法；
  - Condition依赖于Lock接口，生成一个Condition的基本代码是lock.newCondition()
- - 调用Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用
+ - 调用Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用.
 
  Conditon中的await()对应Object的wait()；
  Condition中的signal()对应Object的notify()；
