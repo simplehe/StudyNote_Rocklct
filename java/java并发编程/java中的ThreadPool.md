@@ -17,20 +17,18 @@
 
 那么线程池，从何说起呢？
 
-### Executor框架
+在Executor框架的笔记中，我们知道了JUC包下，有Executors这个工具类。
 
-首先我们在之前的笔记JUC包基础概述里已经知道了，JUC包的大致结构。从功能上大概可以分为那几个模块，那么这里就要提到**Executor框架**。这个概念了。
+并且我们也知道了线程池基本上都是要实现ExecutorService这个接口。
 
-什么是Executor框架呢？这个框架其实就是指JUC包里的：线程池，Executor(JUC包下的一个接口)，Executors(JUC包下的一个类)，ExecutorService，CompletionService，Future，Callable等。
-
-以上这些JUC包里的东西可以被统称为Executor框架。
-
-首先来观察一下Executor体系的整体架构
-
+然后我们可以回顾下Executor接口继承关系的图
 ![](image/Executor.png)
 
-Executor 接口中之定义了一个方法 execute（Runnable command），该方法接收一个 Runable 实例，它用来执行一个任务，任务即一个实现了 Runnable 接口的类。
+因此我们便知道了，可以通过Executors这个工具类，来返回几种不同类型的线程池(实现了ExecutorService接口)
 
-ExecutorService 接口继承自 Executor 接口，它提供了更丰富的实现多线程的方法，比如，ExecutorService 提供了关闭自己的方法，以及可为跟踪一个或多个异步任务执行状况而生成 Future 的方法。 **这个接口包含着管理线程的一些方法的定义，意味着这个接口将被各种线程池实现**
+**有四种创建方法**
 
-也就是各种具体的线程池，通常都直接或间接实现了这个接口下定义的方法。
+#### newCachedThreadPool
+ - 缓存型池子，先查看池中有没有以前建立的线程，如果有，就 reuse 如果没有，就建一个新的线程加入池中
+ - 缓存型池子通常用于执行一些生存期很短的异步型任务 因此在一些面向连接的 daemon 型 SERVER 中用得不多。但对于生存期短的异步任务，它是 Executor 的首选。
+ - 能 reuse 的线程，必须是 timeout IDLE 内的池中线程，缺省 timeout 是 60s,超过这个 IDLE 时长，线程实例将被终止及移出池
