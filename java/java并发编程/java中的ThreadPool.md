@@ -26,7 +26,7 @@
 
 因此我们便知道了，可以通过Executors这个工具类，来返回几种不同类型的线程池(实现了ExecutorService接口)
 
-**有四种创建方法**
+**有四种常用创建方法**
 
 #### newCachedThreadPool
  - 缓存型池子，先查看池中有没有以前建立的线程，如果有，就 reuse 如果没有，就建一个新的线程加入池中
@@ -113,3 +113,22 @@ workQueue这个任务队列却要再次说明一下，它是一个BlockingQueue�
 3. newCachedThreadPool()—>SynchronousQueue
 4. newScheduledThreadPool()—>DelayedWorkQueue
 5. newSingleThreadScheduledExecutor()—>DelayedWorkQueue
+
+具体BlockingQueue可以去看相关笔记
+
+
+**根据以上知识，我们便可以自定义线程池。通过改变ThreadPoolExecutor的构造参数来得到我们想要的线程池，比如改变BlokcingQueue，来使得任务调度顺序符合我们预期**
+
+
+
+ThreadPoolExecutor 提供了两个方法，用于线程池的关闭，分别是 shutdown() 和 shutdownNow()。
+
+
+shutdown()：不会立即的终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务。
+shutdownNow()：立即终止线程池，并尝试打断正在执行的任务，并且清空任务缓存队列，返回尚未执行的任务。
+
+#### 使用
+使用线程池，其中涉及到一个极其重要的方法，即：
+``` java
+execute(Runnable command)
+```
