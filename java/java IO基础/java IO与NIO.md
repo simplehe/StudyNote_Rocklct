@@ -85,9 +85,11 @@ java平台也提供了一组socket接口用以编程，在java.net包中。详�
 #### 背景
 BIO 即阻塞(blocking) I/O，不管是磁盘 I/O 还是网络 I/O，数据在写入 OutputStream 或者从 InputStream 读取时都有可能会阻塞。一旦有线程阻塞将会失去 CPU 的使用权，这在当前的大规模访问量和有性能要求情况下是不能接受的。
 
-zwlj：**也就是说，多线程或者多进程的技术确实是一个办法，但这个办法不够好**
 
 当前一些需要大量 HTTP 长连接的情况，像淘宝现在使用的 Web 旺旺项目，服务端需要同时保持几百万的 HTTP 连接，但是并不是每时每刻这些连接都在传输数据，这种情况下不可能同时创建这么多线程来保持连接。
+
+zwlj：**也就是说，多线程或者多进程的技术确实是一个办法，但这个办法不够好**
+
 
 *有关于网络IO的5种相关模型，可以去操作系统的笔记中去寻找。*
 
@@ -112,12 +114,17 @@ zwlj：**也就是说，多线程或者多进程的技术确实是一个办法�
 
 NIO一个重要的特点是：socket主要的读、写、注册和接收函数，在等待就绪阶段都是非阻塞的(通过轮询完成)，真正的I/O操作是同步阻塞的（消耗CPU但性能非常高）。
 
+所以说，NIO中，一个线程请求写入一些数据到某通道，不需要等待它完全写入，这个线程同时可以去做别的事情。 线程通常将非阻塞IO的空闲时间用于**在其它通道上执行IO操作**，所以一个单独的线程现在可以管理多个输入和输出通道（channel）。如若一个线程可以管理好几个通道IO，那么就不需要开大量线程来解决问题了。
+
 #### 概述
 java NIO主要有三大核心部分：**Channel(通道)，Buffer(缓冲区), Selector**。传统IO基于字节流和字符流进行操作，而NIO基于Channel和Buffer(缓冲区)进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。
+
 
 NIO和传统IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的。 Java IO面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。
 
 zwlj：传统的IO操作，是直接从内核区读取流数据到虚拟机程序InputStream里的，而NIO，则用了类似用户区缓存技术，开辟了一个Buffer，然后通过通道读取。
+
+![](image/nio1.jpg)
 
 #### Buffer
 Buffer是一个对象，它包含一些要写入或读出的数据。在NIO中，数据是放入buffer对象的，而在IO中，数据是直接写入或者读到Stream对象的。应用程序不能直接对 Channel 进行读写操作，而必须通过 Buffer 来进行，即 Channel 是通过 Buffer 来读写数据的。
@@ -139,6 +146,35 @@ Buffer有以下类型
 
 ![](image/buffer1.jpg)
 
+buffer缓冲区实质上就是一块内存，用于写入数据，也供后续再次读取数据。这块内存被NIO Buffer管理，并提供一系列的方法用于更简单的操作这块内存。
+
+一个Buffer有三个属性是必须掌握的，分别是：
+
+ - capacity容量
+ - position位置
+ - limit限制
+
+##### capacity
+作为一块内存，buffer有一个固定的大小，叫做capacity容量。也就是最多只能写入容量值得字节，整形等数据。一旦buffer写满了就需要清空已读数据以便下次继续写入新的数据。
+
+###### position
+当写入数据到Buffer的时候需要中一个确定的位置开始，默认初始化时这个位置position为0，一旦写入了数据比如一个字节，整形数据，那么position的值就会指向数据之后的一个单元，position最大可以到capacity-1.
+
+当从Buffer读取数据时，也需要从一个确定的位置开始。**buffer从写入模式变为读取模式时，position会归零，每次读取后，position向后移动**。
+
+##### limit
+在写模式，**limit的含义是我们所能写入的最大数据量**。它等同于buffer的容量。
+
+一旦切换到读模式，limit则代表我们所能读取的最大数据量，他的值等同于写模式下position的位置。
+
+数据读取的上限时buffer中已有的数据，也就是limit的位置（原position所指的位置）。**所以说读模式下，limit就是最大可读的数据量。**
+
+ position和limit的具体含义取决于当前buffer的模式。capacity在两种模式下都表示容量。
+
+ 下面有张示例图，描诉了不同模式下position和limit的含义：
+
+![](image/nio2.png)
+
 #### Channel
 Channel是对原IO中流的模拟，任何来源和目的数据都必须通过一个Channel对象。
 
@@ -156,3 +192,32 @@ Channel是一个对象，可以通过它读取和写入数据。可以把它看�
  - DatagramChannel：读写UDP网络协议数据
  - SocketChannel：读写TCP网络协议数据
  - ServerSocketChannel：可以监听TCP连接
+
+
+##### 例子
+
+``` java
+RandomAccessFile aFile = new RandomAccessFile("data/nio-data.txt", "rw");
+  FileChannel inChannel = aFile.getChannel();
+
+  ByteBuffer buf = ByteBuffer.allocate(48);
+
+  int bytesRead = inChannel.read(buf);
+  while (bytesRead != -1) {
+
+    System.out.println("Read " + bytesRead);
+    buf.flip();
+
+    while(buf.hasRemaining()){
+        System.out.print((char) buf.get());
+    }
+
+    buf.clear();
+    bytesRead = inChannel.read(buf);
+  }
+  aFile.close();
+```
+
+上面代码，先是创建一个随机读取文件，并创建出通道。
+
+然后通道的read方法把文件数据读入到缓冲区中。然后while语句里则是分批次读出buffer里的内容，每次读完一次以后都要进行flip模式反转，然后读出来以后清空这一批内容，继续read下一批文件数据，直到整个文件的内容被读完。
