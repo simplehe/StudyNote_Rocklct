@@ -47,7 +47,7 @@ public class IdGenerator {
     }
 }
 ```
-#### 显示锁
+#### 显式锁
 基于synchronized关键字的锁机制有以下问题：
 
 - 锁只有一种类型，而且对所有同步操作都是一样的作用
