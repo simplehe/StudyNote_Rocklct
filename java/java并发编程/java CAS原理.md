@@ -25,3 +25,7 @@ Java在JDK1.5之前都是靠synchronized关键字保证同步的，这种通过�
 ### java中的CAS
 
 首先毫无疑问，**在没有锁的机制下可能需要借助volatile原语，保证线程间的数据是可见的（共享的）**。
+
+CAS通过调用JNI的代码实现的。JNI:Java Native Interface为JAVA本地调用，允许java调用其他语言。
+
+而compareAndSwapInt就是借助C来调用CPU底层指令实现的。
