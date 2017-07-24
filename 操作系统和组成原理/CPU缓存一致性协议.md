@@ -5,6 +5,24 @@
 
 所以速度上必然是L1>L2>L3
 
+在处理器看来，缓存是一个透明部件。因此，程序员通常无法直接干预对缓存的操作。但是，确实可以根据缓存的特点对程序代码实施特定优化，从而更好地利用缓存。
+
+### CPU缓存与CPU寄存器
+zwlj：缓存和寄存器是两个概念，缓存专门设于cpu和内存之间，用来解决传输速度不匹配的问题。而寄存器属于CPU的一部分，CPU运算时要先把内存的内容放到自己的寄存器下才能进行运算。
+
+所以具体到CPU指令下的操作，高速缓存是一个透明的(invisible)机制.CPU将内存放入到寄存器时，会经过cpu缓存进行处理。所以具体到汇编指令的时候，中间不会有让你操作缓存的时候，操作内存的时候已经涉及并且经过了缓存。不同核心cpu之间为了保持缓存一致，才有的缓存一致性。
+
+
+### Cache Line
+Cache Line可以简单的理解为**CPU Cache中的最小缓存单位**。目前主流的CPU Cache的Cache Line大小都是64Bytes。假设我们有一个512字节的一级缓存，那么按照64B的缓存单位大小来算，这个一级缓存所能存放的缓存个数就是512/64 = 8个。
+
+如下图：
+
+![](image/cacheline0.png)
+
+zwlj：Cache line就是一个block，一个单位。
+
+
 ### 一致性协议
 
 
@@ -37,3 +55,36 @@ CPU的读取遵循下面几点：
 总之就是，当一个CPU修改缓存中的字节时，**其他CPU会被通知，它们的缓存将视为无效(变为I标签)**。然后最新的数据被推回内存，其他CPU再从内存里读取新的数据。
 
 这样，每个CPU都遵循上面的方式则CPU的效率就提高上来了。
+
+####  缓存一致性原理的补充
+实质上MESI的原理还不是这么简单的。
+
+具体操作可以参见wiki：<a>http://www.wikiwand.com/en/MESI_protocol#/Operation</a>
+
+![](image/mesi.gif)
+
+根据wiki上的描述
+
+```
+Processor Requests to Cache includes the following operations:
+
+PrRd: The processor requests to read a Cache block.
+PrWr: The processor requests to write a Cache block
+Bus side requests are the following:
+
+BusRd: Snooped request that indicates there is a read request to a Cache block made by another processor
+BusRdX: Snooped request that indicates there is a read request to a Cache block made by another processor which doesn't already have the block.
+BusUpgr: Snooped request that indicates that there is a write request to a Cache block made by another processor but that processor already has that Cache block resident in its Cache.
+Flush: Snooped request that indicates that an entire cache block is written back to the main memory by another processor.
+FlushOpt: Snooped request that indicates that an entire cache block is posted on the bus in order to supply it to another processor(Cache to Cache transfers).
+```
+
+经受不同的信号的话，缓存状态就会切换。
+
+请求分为好几种，PrWr接PrRD分别是CPU读写缓存操作。
+
+而BusRd和BusUpgr是，cpu缓存通过总线向别的cpu的缓存读写数据。详细可以去看wiki链接下的Illustration of MESI protocol operations来理解整个流程。
+
+这里的关键是在于缓存一致性维持原子性这样一个概念，缓存一致性是不保证类似自增这种读改写操作的原子性的。
+
+i++会被分成三条汇编命令，move，add，write，大概这三个操作。假设有2个cpu且i=1运行两个自增命令，cpu1先把内存里的内容读到寄存器当中(经过cache，此时cache为1)，此时cpu2也读取内存中的i到寄存器并在寄存器中计算出结果(寄存器值为2，cache为1，内存为1)。假如这个时候，cpu2写数据回内存，cpu2的cache将被写为2(操作缓存如同操作代替的内存)，且cache状态被改为modified，cpu1由于嗅探到cpu的操作，会将自己的cache改为invalid。如此一来，cpu1寄存器运算完(i=2)并且再写回内存的时候，发现自己的缓存失效了，那这个 **写操作将会被忽略(zht共同得出的结论)**。内存中i的值是2(没有保证自增的原子性)，而不是3。
