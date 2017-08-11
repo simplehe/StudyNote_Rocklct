@@ -56,7 +56,7 @@ Maven 对工程的所有操作实实在在的都是由 插件 来完成的。一
 在 pom.xml 文件中， \<build\> \<plugins\> 元素下可以添加 \<plugin\>，通过指定 goal 和 phase 来进行绑定。
 例如：将插件 modello-maven-plugin 的 java 目标绑定到 generate-sources 阶段。
 
-```
+``` xml
 <plugin>
    <groupId>org.codehaus.modello</groupId>
    <artifactId>modello-maven-plugin</artifactId>
