@@ -99,5 +99,7 @@ ClassLoader的默认实现中，loadClass加载类有三个步骤：
 #### Class.forName
 Class.forName是一个静态方法，同样可以用来加载类。该方法有两种形式：Class.forName(String name, boolean initialize, ClassLoader loader)和 Class.forName(String className)。第一种形式的参数 name表示的是类的全名；initialize表示是否初始化类；loader表示加载时使用的类加载器。第二种形式则相当于设置了参数 initialize的值为 true，loader的值为当前类的类加载器。Class.forName的一个很常见的用法是在加载数据库驱动的时候。如 Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance()用来加载 Apache Derby 数据库的驱动。
 
+这里要注意，classloader.loadclass(str)和Class.forName(str),两种方式的区别。前者loadclass，完成了加载的过程，但是并未进行初始化的过程，也就是没有执行类中的静态块赋值语句。而Class.forName,则完成了加载和初始化的过程，完成了类的静态块过程。这也就是为什么加载驱动的时候，都是用的Class.forName去加载驱动名称，而不是用classloader.loadclass.
+
 ### 开发自定义类
 虽然在绝大多数情况下，系统默认提供的类加载器实现已经可以满足需求。但是在某些情况下，您还是需要为应用开发出自己的类加载器。比如您的应用通过网络来传输 Java 类的字节代码，为了保证安全性，这些字节代码经过了加密处理。这个时候您就需要自己的类加载器来从某个网络地址上读取加密后的字节代码，接着进行解密和验证，最后定义出要在 Java 虚拟机中运行的类来。
