@@ -24,6 +24,56 @@ Java泛型（generics）是JDK 5中引入的一个新特性，允许在定义类
 public class Box<T>{}
 ```
 
+**zwlj：顺便一说，如若在使用类的时候不给类型参数，那么默认类型都会变成Object，这大概是由编译器实现决定的，泛型本身就是根据编译器自动帮你类型转换并附加桥接方法实现的\[后面类型擦除有提到\]，最后都是要类型擦除擦掉尖括号，所以默认不给参数的话，比如直接new List()，那么默认List里面的类型就是Object**
+
+### Class\<T\>
+这里要讲一讲Class\<T\>,他有他的特定用法。 随着Java的发展，类Class已经泛型化了
+
+要区别一下T和Class\<T\>,T是指具体的某个类型，比如Apple类。那么Class\<T\>,就是Apple.class(Class类)。本质上，Apple.class的类型就是Class\<Apple\>(也可以只写成一个类型Class)
+
+先看场景，之前的JDK版本中，Class.newInstance() 方法的定义返回 Object，您很可能要将该返回类型强制转换为另一种类型：
+``` java
+People people = (People) Class.forName("com.lyang.demo.fanxing.People").newInstance();
+```
+
+如果反射的类型不是People类，就会报
+java.lang.ClassCastException错误。
+
+使用Class\<T\>泛型后，不用强转了
+
+``` java
+public class Test {
+    public static <T> T createInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException {
+        return clazz.newInstance();
+    }
+
+    public static void main(String[] args)  throws IllegalAccessException, InstantiationException  {
+            Fruit fruit= createInstance(Fruit .class);
+            People people= createInstance(People.class);
+    }
+}
+
+```
+
+zwlj:Class到Class\<T\>是一个泛型化的过程。
+
+原本Class的定义大致是
+``` java
+class Class {
+     Object newInstance();
+ }
+```
+
+泛型化之后，定义被更改.
+``` java
+class Class<T> {
+     T newInstance();
+}
+```
+
+因此反射的时候可以拿到具体类型。
+
+
 ### 通配符与上下界
 在使用泛型类的时候，既可以指定一个具体的类型，如List\<String\>就声明了具体的类型是String；也可以用通配符?来表示未知类型，**如List\<?\> 就声明了List中包含的元素类型是未知的**。
 
@@ -81,7 +131,7 @@ ln.add(new Float(3.1415));
 
 很多泛型的奇怪特性都与这个类型擦除的存在有关，包括：
  - 泛型类并没有自己独有的Class类对象。比如并不存在List\<String\>.class或是List\<Integer\>.class，而只有List.class。
- - 静态变量是被泛型类的所有实例所共享的。对于声明为MyClass\<T\>的类，访问其中的静态变量的方法仍然是 MyClass.myStaticVar。不管是通过new MyClass\<String\>还是new MyClass\<Integer\>创建的对象，都是共享一个静态变量。
+ - 静态变量是被泛型类的所有实例所共享的。对于声明为MyClass\<T\>的类，访问其中的静态变量的方法仍然是 MyClass.myStaticVar。不管是通过new MyClass\<String\>还是new MyClass\<Integer\>创建的对象，亦或直接new MyClass，都是共享一个静态变量。
  - 泛型的类型参数不能用在Java异常处理的catch语句中。因为异常处理是由JVM在运行时刻来进行的。由于类型信息被擦除，JVM是无法区分两个异常类型MyException\<String\>和MyException\<Integer\>的。对于JVM来说，它们都是 MyException类型的。也就无法执行与异常对应的catch语句。
 
 需要注意的是，**在Java中不允许创建泛型数组**
