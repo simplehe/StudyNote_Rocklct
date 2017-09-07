@@ -125,3 +125,25 @@ testEx, finally; return value=false
 ```
 
 仔细看上面代码就可以知道异常抛出被testEx2给catch了之后，testEx1等再没有catch到异常，而是直接进入finally。
+
+#### 异常抛出中的throw new RuntimeException(e)
+throw new RuntimeException(e)是把异常包在一个运行时异常中抛出。
+
+我们常看见这种写法
+
+``` java
+try{
+....
+}catch(Exception e){
+e.printStackTrace( );
+throw new RuntimeException(e);
+}
+```
+
+这是处理没法进一步处理的异常的一般做法。try块中出现了一个异常，它被catch住了，我们首先要在标准输出上打印出异常但是如果没有throw这句，这个错误就静悄悄地被catch块吃掉了，程序会继续运行。可这个时候很可能你的程序的状态已经不对了，继续下去也没有什么意义，所以应该继续抛出这个异常。你当然可以写throw e;，但是这个e是一般的异常，如果这样抛出的话，你得在这个函数头上用throws来声明，比如
+
+``` java
+public void abc() throws Exception
+```
+
+然后调用这个函数的函数也还得这么干，所以一般的处理是把e包装成运行时异常：new  RuntimeException(e)，这样就不需要在函数头声明了,**因为就在此时程序会直接中断，没有处理下去的意义了**。
