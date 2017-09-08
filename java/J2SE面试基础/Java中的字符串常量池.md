@@ -7,7 +7,7 @@ HotSpot中，字符串常量池在java7以前都在方法区，也就是永久�
 ### 原理
 当代码中出现字面量形式创建字符串对象时，JVM首先会对这个字面量进行检查，如果字符串常量池中存在相同内容的字符串对象的引用，则将这个引用返回，否则新的字符串对象被创建，然后将这个引用放入字符串常量池，并返回该引用。
 
-比如我们用String str1 = "xxx" 创建了一个String对象，然后我们再String str2 = "droid";
+比如我们用String str1 = "xxx" 创建了一个String对象，然后我们再String str2 = "xxx";
 
 这时如果执行代码System.out.println(str1 == str2);
 
