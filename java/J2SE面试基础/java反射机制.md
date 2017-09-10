@@ -16,3 +16,41 @@ Class c = Cat.class;
             System.out.println(field);
         }
 ```
+
+### setAccessible 调用私有域和方法
+**Method、Field和Constructor类共同继承了AccessibleObject类**，该基类有两个setAccessible方法能在**运行时压制Java语言访问控制检查(Java language access control checks)，从而能任意调用被私有化保护的方法、域和构造方法**
+
+java代码中，常常将一个类的成员变量置为private
+
+在类的外面获取此类的私有成员变量的value时，要注意
+
+假定有如下代码
+
+``` java
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Class clazz = Class.forName("com.test.accessible.AccessibleTest");
+        AccessibleTest at = new AccessibleTest();
+        at.setId(1);
+        for (Field f : clazz.getDeclaredFields()) {
+            f.setAccessible(true);//AccessibleTest类中的成员变量为private,故必须进行此操作
+            System.out.println(f.get(at));//获取当前对象中当前Field的value
+        }
+
+    }
+
+}
+```
+
+我们假定定义了一个AccessibleTest类，他里面的有个private int id变量。上述代码首先setid为1了，然后这里要注意，for循环可以获得AccessibleTest类的各个域，也就是实例变量。但是id是private的，理应不可以由外面访问，所以这里才有了setAccessible为true。压制了语言访问控制检查，从而可以获得这个private filed。
+
+如果没有在获取Field之前调用setAccessible(true)方法，异常：
+
+```
+java.lang.IllegalAccessException:
+Class com.test.accessible.Main
+can not access
+a member of class com.test.accessible.AccessibleTest
+with modifiers "private"
+```
