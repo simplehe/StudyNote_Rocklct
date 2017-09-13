@@ -151,7 +151,7 @@ LinkedBlockingQueue阻塞队列大小的配置是可选的，如果我们初始�
 和ArrayBlockingQueue一样，LinkedBlockingQueue 也是以先进先出的方式存储数据，最新插入的对象是尾部，最新移出的对象是头部。
 
 ####  PriorityBlockingQueue
-PriorityBlockingQueue是一个没有边界的队列，它的排序规则和 java.util.PriorityQueue一样。需要注意，PriorityBlockingQueue中允许插入null对象。
+PriorityBlockingQueue是一个没有边界的队列，它的排序规则和 java.util.PriorityQueue一样。需要注意，**PriorityBlockingQueue中允许插入null对象**,但是PriorityQueue不行。
 
 所有插入PriorityBlockingQueue的对象必须实现 java.lang.Comparable接口，队列优先级的排序规则就是按照我们对这个接口的实现来定义的。
 
