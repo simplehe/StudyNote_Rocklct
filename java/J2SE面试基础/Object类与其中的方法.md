@@ -64,6 +64,9 @@ public int hashCode() {
 
 自定义对象需要重写equals方法和hashcode方法，不过也要注意，hashcode的算法最好必须满足上面列出来的三条通用约定。如果两个对象equals一样，但是hashcode不同，会导致hashmap里冗余存储，如果两个对象equals不一样，hashcode一样，这无所谓，只不过会导致性能降低而已。
 
+如果对象没有自定义hashCode方法，也有默认实现。默认情况下，Object中的hashCode() 返回对象的32位jvm内存地址。也就是说如果对象不重写该方法，则返回相应对象的32位JVM内存地址。
+
+
 建议2个方法equals和hashCode都一起重写
 
 ### equals方法
