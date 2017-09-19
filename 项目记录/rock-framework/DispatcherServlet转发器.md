@@ -1,0 +1,24 @@
+## DispatcherServlet转发器
+位于com.rocklct.framework包下。
+
+是整个Web框架的核心类。
+
+所有的请求都会先被递送到这个Servlet下，然后这个Servlet充当转发器，转发请求给不同的地方，具体来说就是转发给各个Controller以及对应的Action方法下做处理。返回的是一个View或者Json字符串。
+
+这个核心Servlet里面的实现了两个重要方法，一个是init初始化，一个是service用于处理具体的请求。
+
+### init
+当初始化这个Servlet的时候，我们这时也必须要考虑到很多工具类我们需要是用，包括各种Helper和Util。所以显然这个时候我们需要把所有的helper都初始化，这时init其中一个重要的任务。
+
+接下来便是拿到Servlet的上下文，进行一些地址的注册。以便资源可以顺利访问，转发器Servlet可以正确读取。
+
+### service方法
+service方法是这个Servlet的核心。当请求交给Servlet的时候，转发器要负责转发请求给合适Controller里的Action方法。
+
+所以首先，service会从HttpServletRequest和HttpServletResponse里获取到请求的方式(get or post),和对应地址。组装这个两个变量得到Request bean对象，从而可以根据ControllerHelper获取到对应的Handler处理器，然后用这个处理器获取到Controller的实例和对应的方法Method类。之后就是组装HttpServletRequest中的Parameter(也就是用户提交上来的表单数据)，然后利用ReflectionHelper调用这个方法，得到返回值result。
+
+result一般有两个Bean类型，View和Data。View代表着Jsp页面，而Data则代表着Json数据的封装。
+
+所以我们分类讨论，如果执行Action方法返回结果是View对象，说明我们需要给一个Jsp页面处理，那我们就要get到这个view对象的path，然后从View对象里获得model数据，将这些model数据组装到HttpServletRequest里然后由RequestDispather转发给对应的jsp页面处理。
+
+如果Action方法返回的结果是一个Data对象。那我们便可以直接从这个Data对象里获取到Model.然后调用Jackson库来把这个model对象转换成json字符串。把这个字符串直接送到response writer那里输出给用户。

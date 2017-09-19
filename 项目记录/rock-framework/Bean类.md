@@ -19,4 +19,4 @@ Param这个Bean类实质上是对Http请求中的参数进行了一个封装。�
 View这个Bean类，就是试图Bean类。当用户使用web框架的时候，写Action方法的返回类型就是一个View，View就是对Jsp页面进行了一个封装。所以View里首先由path路径，还有model数据。model数据是一个map，用来存取请求给某个view页面时，post或者get传输过来的数据map(json).
 
 ### Data类
-Data这个Bean类，和View类一样，也是Action的返回值的一种。当返回值为View类的时候是渲染jsp页面，当返回值是Data类的时候，返回的是json数据。Data类里面仅只封装一个Object，框架会将这个对象写入HttpServletResponse对象中，从而直接输出到浏览器。
+Data这个Bean类，和View类一样，也是Action的返回值的一种。当返回值为View类的时候是渲染jsp页面，当返回值是Data类的时候，返回的是json数据。Data类里面仅只封装一个Object，框架会将这个对象用Jackson解析成json字符串，然后写入HttpServletResponse对象中，从而直接输出到浏览器。
