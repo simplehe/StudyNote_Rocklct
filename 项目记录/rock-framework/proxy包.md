@@ -15,3 +15,11 @@ Proxy接口中包括了一个doProxy方法，传入一个ProxyChain，用于执�
 
 ### ProxyManager类
 这个类便是用来创建代理的了，我们传入realObject类，以及一些proxy接口的实现类，它便能返回给我们一个xxxProxy代理类。
+
+原理便是使用CGLib，new一个匿名MethodInterceptor对象，并覆盖
+里面的intercept拦截方法，原本在这个方法里便可以实现增强拦截等效果。这时把MethodProxy这个方法拦截器对象传出去，传给proxyChain对象，就可以依次执行完串起来的proxy方法(proxyChain的逻辑)，最后再调用MethodProxy.invokeSuper来继续realObject的逻辑。
+
+用Enhancer.create方法来创建并返回代理。
+
+### AspectProxy抽象类
+继承了Proxy接口，相当于Proxy实现的一个模板抽象类，所有的proxy类都要继承这个切面类。这个切面类里封装了before，after等方法，用来指导如何增强从targetObject拦截来的方法。从代码可知，在将proxychain执行前，会执行before方法，proxychain执行并得到最终结果后，还会调用after方法实现后置增强。这个方法执行时会从传入的proxychain中拿出执行的方法，对象，参数等。除此之外，抽象方法还能有选择的实现。

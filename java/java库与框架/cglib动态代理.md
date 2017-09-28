@@ -25,7 +25,6 @@ public class CglibRealSubject{
 
 ``` java
 public class CGLibProxy implements MethodInterceptor{
-  Object realObject;
 
   public <T> T getProxy(Class<T> cls){
     return (T) Enhancer.create(cls,this);
