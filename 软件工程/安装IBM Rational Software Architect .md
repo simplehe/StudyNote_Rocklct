@@ -19,3 +19,12 @@ IBM Rational Software Architect 是个专业的UML设计软件。
 然后根据提示下一步，load两个disk就可以了。
 
 安装好以后，解压crack包，然后将文件复制到对应目录。
+
+### 调整语言
+如果装了中文，是有办法调成英文的。只需要在软件目录下的elipse.ini中添加一行
+
+```
+-Duser.language=en
+```
+
+在那个配置文件中添加那个配置即可。
