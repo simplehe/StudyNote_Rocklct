@@ -67,7 +67,7 @@ Handler创建时候要绑定一个消息队列，这个消息队列当然必须*
 以上粗略了解机制以后，再来具体分析一下各个组件。
 
 #### Handler
-Handler 必须与一个 Looper 关联才能使用。怎么样关联呢？你可以手动传入一个 Looper 对象，让 Handler 关联你传入的 Handler。也可以什么都不传，这时候 Handler 会自己去找当前线程的 Looper，如果找到就万事大吉，**如果当前线程没有 Looper，那么就会报错**。
+Handler 必须与一个 Looper 关联才能使用。怎么样关联呢？你可以手动传入一个 Looper 对象，让 Handler 关联你传入的 Looper。也可以什么都不传，这时候 Handler 会自己去找当前线程的 Looper，如果找到就万事大吉，**如果当前线程没有 Looper，那么就会报错**。
 
 ``` java
 // 不传入 Looper，系统会自己去获取当前线程中的 Looper。
