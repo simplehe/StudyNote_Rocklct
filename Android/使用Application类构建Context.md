@@ -1,7 +1,7 @@
 ## Application类的使用
 
 ### Context类
-我们熟悉的Activity、Service、ContentPrivoder等系统组件才能有自己各自的上下文环境，也就是Context。**Context是维持Android应用的核心功能类，是整个Android系统交互的核心**。
+我们熟悉的Activity、Service、ContentPrivoder等系统组件有自己各自的上下文环境，也就是Context。**Context是维持Android应用的核心功能类，是整个Android系统交互的核心**。
 
 ![](image/context0.png)
 
