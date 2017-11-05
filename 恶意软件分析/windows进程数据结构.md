@@ -31,6 +31,8 @@ zwlj:这里注意，上面的PEB不是PCB，不要搞混，PEB在用户区，PCB
 #### ActiveProcessLinks
 这个域也比较重要，ActiveProcessLinks域是一个双链表节点(注意是双链表中的一个节点)，在windows系统中，所有的活动进程都连接在一起，构成了一个链表。
 
+zwlj:在win系统中，进程在内存中表示为一个EPROCESS结构，而这些EPROCESS结构将会互相连接，连成一个双向的循环链表，这样就能根据某个头结点一直遍历，最后获取所有的进程。
+
 表头是全局变量PsActiveProcessHead。内部变量**PsActiveProcessHead**是一个LIST_ENTRY结构，它是一个**双链表的表头**，在windows的进程双链表中指定了系统进
 程列表的第一个成员(回想数据结构中双链表需要一个和链表项相同的表头结构来当作入口点)。
 这里注意一下:
