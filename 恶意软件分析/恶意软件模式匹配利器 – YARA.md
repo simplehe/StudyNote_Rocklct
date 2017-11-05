@@ -20,3 +20,5 @@ rule silent_banker : banker
 ```
 
 以上规则告诉YARA任何包含有$a、$b、$c字符串的文件都被标识为slient_banker。这仅仅是一个简单的例子，YARA的规则可以复杂和强大到支持通配符、大小写敏感字符串、正则表达式、特殊符号以及其他特性。
+
+zwlj:我们使用yara(基于一种规则来检测malware的程序)来帮助我们从系统中根据一些特定特征检测出一系列同类malware。比如说，我们手里发现了一个malware，我们希望知道系统里还有没有其他的别的类似的malware，我们因此就需要对手里这个malware进行分析，抽取出一些非常unique的具有特征的信息，比如malware author，或者hash，或者一些重要string。我们根据这些特征编写yara rule，从而运行yara找出一些类似特征的malware。
