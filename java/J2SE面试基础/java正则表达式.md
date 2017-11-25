@@ -20,9 +20,9 @@ Java正则表达式的类在 java.util.regex 包中，包括三个类：Pattern,
 
  - (A)
 
- - (B(C))
+ - (B\(C\))
 
- - (C)
+ - \(C\)
 
 
 为了在表达式中计算有多少个组，可以调用 matcher 对象中的 groupCount 方法。 groupCount 方法返回一个 int 类型来显示正则表达式中的捕获组的数量。
