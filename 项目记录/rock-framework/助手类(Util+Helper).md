@@ -33,12 +33,19 @@ util包下
 
 
 helper包下
- - ConfigHelper类用来读取文件配置(利用了PropsUtil)
+#### ConfigHelper类
+用来读取文件配置(利用了PropsUtil)
 
- - ClassHelper类(利用ClassUtil)，用来读取应用基础包路径下的类，并且抽取出带有注解的类并放入集合中。Service和Controller标注的类，作为框架管理的Bean类。
+#### ClassHelper类
+ClassHelper类(利用ClassUtil)，用来读取应用基础包路径下的类，并且抽取出带有注解的类并放入集合中。Service和Controller标注的类，作为框架管理的Bean类。
 
- - BeanHelper类，相当于一个Bean容器，这个类的核心就是内置一个Map，我们首先会根据ClassHelper去获取应用中进行了标注的Class，然后再把这些BeanClass(Service和Controller类)一一实例化，实例化以后放入到BeanHelper的这个Map中。Map的key设置为Class类，value为这个具体Class的实例。
+经过切面功能扩展以后，新增两个方法，一个是获得继承了某个具体父类的所有子类Class，一个是获得被某个特定标注标记的所有Class。
 
- - IocHelper类,用来实现依赖注入的功能。充当IoC容器，原理很直接，在静态块中先利用BeanHelper获取到BeanMap，这个Map的key值是Service和Controller类和相应的实例。获取Bean实例，查看里面的成员变量是否有Inject注解，有的话利用ReflectionUtil去为这个成员变量注入实例值。不过这里要注意，注入的值依旧是从Map里获取Service实例(因为也属于Bean)，而不是重新创建。从这个角度来说，里面的所有对象都是单例。
+#### BeanHelper类
+相当于一个Bean容器，这个类的核心就是内置一个Map，我们首先会根据ClassHelper去获取应用中进行了标注的Class，然后再把这些BeanClass(Service和Controller类)一一实例化，实例化以后放入到BeanHelper的这个Map中。Map的key设置为Class类，value为这个具体Class的实例。里面还有setBean方法，用于面向切面编程，controller类的实例被包装成代理类实例后，要重新装载进核心map中。
 
- - ControllerHelper类，这个类的核心，也是一个Map，这个Map映射request和handler两个Bean对象。也就是说，当客户端请求一个地址的时候，这个ControllerHelper能帮助你根据地址找到对应的handler来处理。
+#### IocHelper类
+用来实现依赖注入的功能。充当IoC容器，原理很直接，在静态块中先利用BeanHelper获取到BeanMap，这个Map的key值是Service和Controller类和相应的实例。获取Bean实例，查看里面的成员变量是否有Inject注解，有的话利用ReflectionUtil去为这个成员变量注入实例值。不过这里要注意，注入的值依旧是从Map里获取Service实例(因为也属于Bean)，而不是重新创建。从这个角度来说，里面的所有对象都是单例。
+
+#### ControllerHelper类
+这个类的核心，也是一个Map，这个Map映射request和handler两个Bean对象。也就是说，当客户端请求一个地址的时候，这个ControllerHelper能帮助你根据地址找到对应的handler来处理。
