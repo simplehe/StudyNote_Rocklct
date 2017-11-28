@@ -49,3 +49,14 @@ ClassHelper类(利用ClassUtil)，用来读取应用基础包路径下的类，�
 
 #### ControllerHelper类
 这个类的核心，也是一个Map，这个Map映射request和handler两个Bean对象。也就是说，当客户端请求一个地址的时候，这个ControllerHelper能帮助你根据地址找到对应的handler来处理。
+
+#### AopHelper
+这个类用来实现Aop的核心功能。首先通过某个具体的切面标注实例(通过对用户编写的切面代理类反射获得的，可以知道用户想包装什么样的类，比如想这个切面包装所有Controller类),获取到所有应该被代理的Class类(也要判断被标注的不是Aspect初始类)(createTargetClassSet方法)。
+
+createProxyHelper这个方法用于将切面类(封装了增强逻辑)和需要背标注的那些具体类，两者用Map映射起来。
+
+
+##### 缕清逻辑
+首先我们知道Aspect是一个标注类，用来标注切面类，切面类封装了很多增强逻辑，我们会用切面类去封装一些具体的类。Aspect标注切面类的同时，会传递一个value，这个value会表明，需要被包装的类是什么类型，而这个value当然也是一个标注类的类型，比如我们写的某个切面类需要包装所有controller，那我们当然会用标注Aspect(Controller.class)，去标注，这样就会知道，**这个切面是去包装"被controller标注的类"**。这里还要注意，用户写的切面类都必须要继承AspectProxy这个模板类，还必须带有Aspect注解。
+
+而AopHelper就是用于映射每个Aspect切面类和需要被它包装的所有类。所以我们在createProxyMap中，先找出所有用户写的继承了AspectProxy的切面类，然后得到这些切面类的标注，看看它们分别想标注什么样的类，然后返回一个set集合和这些切面类对应起来。
