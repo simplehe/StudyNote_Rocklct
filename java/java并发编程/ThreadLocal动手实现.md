@@ -42,3 +42,5 @@ public class MyThreadLocal<T> {
     }
 }
 ```
+
+这里山寨跟原版的不同在于，原版首先把map放在了Thread类中，而且map持有的是
