@@ -25,7 +25,7 @@ result = proxyChain.doProxyChain();
 类中定义了一系列成员变量，核心方法是doProxyChain方法，用来一一执行proxy类.类里有proxyIndex变量，记录内置proxyList中proxy的数量。执行doProxyChain时，从0开始执行list中proxy类的doProxy方法，而这个方法中也会再次调用proxyChain中的doProxyChain方法，所以相当于proxyList中的代理会被一一执行完毕。执行完毕以后，调用MethodProxy中的invokeSuper方法，执行realObject的业务逻辑。
 
 ### ProxyManager类
-这个类便是用来创建代理的了，我们传入realObject类，以及一些proxy接口的实现类，它便能返回给我们一个xxxProxy代理类。
+这个类便是用来创建代理的了，我们传入realObject类的Class类，以及一些proxy接口的实现类的List，它便能返回给我们一个**xxxProxy代理类的实例**。
 
 原理便是使用CGLib，new一个匿名MethodInterceptor对象，并覆盖
 里面的intercept拦截方法，原本在这个方法里便可以实现增强拦截等效果。这时把MethodProxy这个方法拦截器对象传出去，传给proxyChain对象，就可以依次执行完串起来的proxy方法(proxyChain的逻辑)，最后再调用MethodProxy.invokeSuper来继续realObject的逻辑。
