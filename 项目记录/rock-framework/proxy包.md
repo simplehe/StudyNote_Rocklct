@@ -10,7 +10,7 @@ Proxy接口中包括了一个doProxy方法，传入一个ProxyChain，用于执�
 
 实现中会提供相应的横切逻辑(也就是增强Advice的逻辑)，并且再次调用proxyChain的doProxyChain()方法。
 
-这里一开始我有个困惑，那就是proxy方法如何控制前置和后置的增强。实质上上proxy类中的doProxy类，就是通过调用doProxyChain的时机来决定前置增强还是后置增强的。因为一旦调用doProxyChain，代理链就会逐条执行，直到最后调用methodProxy(拦截器)来执行原方法，但是执行完原方法后还是会回到(return到)这个doProxy方法来
+这里一开始我有个困惑，那就是proxy方法如何控制前置和后置的增强。实质上上proxy类中的doProxy方法，就是通过调用doProxyChain的时机来决定前置增强还是后置增强的。因为一旦调用doProxyChain，代理链就会逐条执行，直到最后调用methodProxy(拦截器)来执行原方法，但是执行完原方法后还是会回到(return到)这个doProxy方法来
 
 ```
 .....//前置增强逻辑
@@ -38,3 +38,8 @@ result = proxyChain.doProxyChain();
 从代码可知，在将proxychain执行前，会执行before方法，proxychain执行并得到最终结果后，还会调用after方法实现后置增强。这个方法执行时会从传入的proxychain中拿出执行的方法，对象，参数等。除此之外，抽象方法还能有选择的实现。
 
 之后用户想创建proxy，直接继承这个模板就方便很多了。
+
+### TransactionProxy类
+和AspectProxy类一样是一个模板，但是是一个**封装事务**的proxy模板，里面在调用doproxy方法的时候，会在前后调用databasehelper里的开启和关闭事务的方法。使得方法的调用具有事务性。
+
+transactionProxy内置一个ThreadLocal的flag，这个flag用于标记同一个线程内，**事务控制相关的逻辑只会执行一次**。

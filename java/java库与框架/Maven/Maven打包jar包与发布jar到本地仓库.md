@@ -21,4 +21,4 @@ mvn install:install-file -Dfile=my-jar.jar -DgroupId=org.richard
 
 进入到jar包所在目录，执行这个cmd命令。其中参数也要调对，DgroupID是groupid，artifactid verison，这些都需要在pom里配置正确才能读取。
 
-当然也可以在idea中，project structure里找到dependency选项，里面找到local maven jar包的位置，然后收到复制jar包到那个目录也可以。
+当然也可以在idea中，project structure里找到dependency选项，里面找到local maven jar包的位置，然后手动复制jar包到那个目录也可以。

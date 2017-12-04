@@ -51,7 +51,7 @@ ClassHelper类(利用ClassUtil)，用来读取应用基础包路径下的类，�
 这个类的核心，也是一个Map，这个Map映射request和handler两个Bean对象。也就是说，当客户端请求一个地址的时候，这个ControllerHelper能帮助你根据地址找到对应的handler来处理。
 
 #### AopHelper
-这个类用来实现Aop的核心功能。首先通过某个具体的切面标注实例(通过对用户编写的切面代理类反射获得的，可以知道用户想包装什么样的类，比如想这个切面包装所有Controller类),获取到所有应该被代理的Class类(也要判断被标注的不是Aspect初始类)(createTargetClassSet方法)。
+这个类用来实现Aop的核心功能。首先通过某个具体的切面标注实例(通过对用户编写的切面代理类反射获得的，可以知道用户想包装什么样的类，比如像这个切面包装所有Controller类),获取到所有应该被代理的Class类(也要判断被标注的不是Aspect初始类)(createTargetClassSet方法)。
 
 createProxyMap这个方法用于将切面类(封装了增强逻辑)和需要背标注的那些具体类，两者用Map映射起来。
 
@@ -65,4 +65,16 @@ createTargetMap则是利用了createProxyMap这个方法，我们用之前的方
 最后我们利用createTargetMap方法，反向操作，得到每个具体需要被切面包装的类，比如某个controller类，会有哪些AspectProxy处理它，这样得到一个反向映射集合。很显然这个集合才是我们想要的，因为只有这样，我们在执行某个controller类的时候，才会取得一个proxyChain。**要注意createTargetMap这个方法，它封装的是某个具体要被处理的Class，和处理它的AspectProxy实例**。也就是说在这里，实例已经被封装进去了，用以之后封装成proxyChain。
 
 
-静态块正式遵循以上逻辑，先获取proxyMap，获得所有代理Class及其对应的Bean Class，最后反向操作，获得每个Bean Class及其对应的ProxyList。最后将其一一set到BeanHelper的Bean Map当中
+静态块正是遵循以上逻辑，先获取proxyMap，获得所有代理Class及其对应的Bean Class，最后反向操作，获得每个Bean Class及其对应的ProxyList。最后将其一一set到BeanHelper的Bean Map当中
+
+##### 添加事务特性
+为了使得AopHelper可以添加事务代理机制，修改了几处地方。主要是新增了addTransactionProxy方法，用来获取所有被标注了Service的类,也就是说，所有的Service类都是Transaction代理需要执行的对象，然而，关键点在于Service类里的**方法**，有没有被打上transaction标注，如果有，当然就会启动事务来封装这个方法调用。
+
+### DatabaseHelper类
+用来封装数据库操作的，方便外面调用复用代码。里面有一些方法。
+
+有执行sql语句和sql文件的方法，有获取链接的方法，帮助我们创建对数据库的链接。当然这个connection是封装在ThreadLocal里面的。
+
+还有操作实体类的方法，传入Model层的Class类，利用增删查改操作可以直接返回这个Bean类的list。
+
+最后还加入了数据库事务相关的操作，加入了开启事务的方法beginTransaction，去conn关闭自动提交事务(默认每条sql语句都自动提交事务)。除此之外还有commitTransaction方法用来提交事务并且顺便remove connection。还有rollbackTransaction用来回滚事务。
