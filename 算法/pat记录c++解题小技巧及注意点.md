@@ -22,6 +22,8 @@ string overload 許多 operator，包括 +、+=、<、=、[]、<<、>> 等，這
 
 string重载了==，不再是比较指针地址了，而是**直接比较string之间的内容**。**赋值也可以直接将c风格字符串(即char数组)直接赋值给string**
 
+用scanf和printf输出时候，只需要调用string的c_str()函数转成c风格字符串即可。
+
 #### 字符串和数字之间的转换
 
 利用sscanf和sprintf函数，这两个都是c语言的函数。sscanf和sprintf两个和scanf和printf不同的是，后者输入源输出初是来自键盘缓冲区，而前者则是自定义源和目的处。
@@ -65,3 +67,6 @@ int i;
 stream1 >> i;
 cout << i << endl;  // displays 25
 ```
+
+### c++中的值传递
+在java中，由于对象变量是引用，所以容器的操作基本都是引用传递。而c++中，你可以直接操作指针，**容器的添加操作(如vector的push_back)都是直接添加这个对象，而不是传递指针，需要注意**。

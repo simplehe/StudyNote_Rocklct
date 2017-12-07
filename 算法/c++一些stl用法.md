@@ -14,15 +14,17 @@ int main(){
 	map<string,int>::iterator ii = a.find("test");//找有没有对应迭代器，没有的话会返回a.end();
 	cout<<"find "<<ii->first<<" "<<ii->second<<endl;
     //对于map,迭代器的first是key值，second是value值
-} 
+}
 ```
 
 ## set
 
 用法和map差不多，find也是返回指针，insert直接插入value。注意set内部直接红黑树，可以直接用来操作动态排序。创建排序结构体，重写里面的operator()方法，然后定义set的时候传入就可以了。
 
+除了创建排序结构体以外，直接在元素内部重载操作符也是可以的。
+
 ``` c++
-#include<set> 
+#include<set>
 using namespace std;
 
 struct mycmp{
@@ -40,7 +42,7 @@ int main(){
 		cout<<*i<<" ";
 	}
 	cout<<endl;
-} 
+}
 ```
 
 ## priority_queue
@@ -75,7 +77,7 @@ int main(){
 	c.push(n3);
 	while(!c.empty()){
 	cout<<"front: "<<c.top().value<<endl;
-	c.pop();	
-	} 
-} 
+	c.pop();
+	}
+}
 ```
