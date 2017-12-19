@@ -32,7 +32,7 @@ domain，指定了 cookie 将要被发送至哪个或哪些域中。默认情况
 
 zwlj：因此想要所有二级或者三级子域名都能访问一个cookie，那就必须set-cookie的时候设置顶级域名。
 
-domain 选项的值必须是发送 Set-Cookie 消息头的主机名的一部分，例如我不能在 google.com 上设置一个 cookie，因为这会产生安全问题。**不合法的 domain 选择将直接被忽略**。
+domain 选项的值必须是发送 Set-Cookie 消息头的主机名的一部分，例如我(yahoo)不能随便在 google.com 上设置一个 cookie，因为这会产生安全问题。**不合法的 domain 选择将直接被忽略**。
 
 zwlj:也就是说，b网站给我们设置的cookie，浏览器不会允许你发送给a。
 
