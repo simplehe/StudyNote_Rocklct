@@ -153,6 +153,22 @@ std::string isbn() const { return this->book;}
 常量成员函数不能改变调用它的对象的内容，但是可以读取。
 
 
+C++允许成员方法基于基本的const类型进行重载
+
+``` c++
+class A{
+  void a() {} //fun1
+  void a() const {} //fun2
+}
+
+A a1;
+const A a2;
+a1.a(); //fun1
+a2.a(); // fun2
+```
+
+由以上代码可知，虽然调用a方法的参数和类型都相同，只是在尾部添加了const，但c++允许通过这个方法重载。所以当const变量a2调用方法时，调用的是第二个基于const的成员方法。
+
 #### 类内成员函数默认内联
 定义在类内的成员函数是默认inline的，如果在类外部定义成员函数，最好显示用inline定义。
 
