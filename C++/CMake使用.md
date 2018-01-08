@@ -20,6 +20,7 @@ aux_source_directory(. PROGRAM_SOURCE)  # 将当前目录所有文件添加到�
 add_executable(hello ${PROGRAM_SOURCE}) # 指定目标可执行文件 hello 的源代码文件为 PROGRAM_SOURCE
 ```
 
+以上示例，**add_executable就是最后会生成一个hello的可执行文件，而这个可执行文件的源文件是后者**
 
 #### 添加外部头文件查找目录
 当我们用到外部的库的时候，我们便需要添加外部库的头文件所在目录作为头文件查找目录。在 CMakeLists 中添加以下代码即可
