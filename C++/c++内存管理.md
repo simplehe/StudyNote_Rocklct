@@ -143,4 +143,10 @@ zwlj:也就是说，对于对象，new的时候对象会自动调用构造函数
 
 2. 判断指针是否为NULL，如果是则马上用exit(1)终止整个程序的运行
 
-3. 为new和malloc设置异常处理函数。例如Visual C++可以用_set_new_hander函数为new设置用户自己定义的异常处理函数，也可以让malloc享用与new相同的异常处理函数。详细内容请参考C++使用手册。 
+3. 为new和malloc设置异常处理函数。例如Visual C++可以用_set_new_hander函数为new设置用户自己定义的异常处理函数，也可以让malloc享用与new相同的异常处理函数。详细内容请参考C++使用手册。
+
+### 内存拷贝函数memcpy
+
+memcpy函数原型：`void*memcpy(void*dest, const void*src,unsigned int count); `
+
+也就是吧src所指的内存区域的count个字节复制到dest指针所指的内存区域。**两个区域不能重叠，函数返回dest指针**
