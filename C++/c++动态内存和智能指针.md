@@ -22,7 +22,7 @@ shared_ptr的目标非常简单：多个指针可以同时指向一个对象，�
 shared_ptr<int> p = make_shared<int>(42);
 ```
 
-上面的代码创建了一个shared_ptr,指向一块内存，该内存包含一个整数，以及引用计数1.如果通过sptr1再创建一个shared_ptr,引用计数就会变成2. 该计数被称为强引用(strong reference)，除此之外，shared_ptr还有另外一种引用计数叫做弱引用(weak reference)
+上面的代码创建了一个shared_ptr,指向一块内存，该内存包含一个整数，以及引用计数1.如果通过p再创建一个shared_ptr,引用计数就会变成2. 该计数被称为强引用(strong reference)，除此之外，shared_ptr还有另外一种引用计数叫做弱引用(weak reference)
 
 通过调用use_count()可以得到引用计数， 据此你能找到shared_ptr的数量。当debug的时候，可以通过观察shared_ptr中strong_ref的值得到引用计数。
 
