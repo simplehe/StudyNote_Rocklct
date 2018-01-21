@@ -137,6 +137,9 @@ epoll使用一个文件描述符管理多个描述符，**将用户关系的文�
 
 epoll最大的好处在于它不会随着监听fd数目的增长而降低效率。因为在内核中的select实现中，它是采用轮询来处理的，轮询的fd数目越多，自然耗时越多(并且select还有数量限制)。
 
+
+**epoll是通过内核与用户空间mmap同一块内存实现的。mmap将用户空间的一块地址和内核空间的一块地址同时映射到相同的一块物理内存地址（不管是用户空间还是内核空间都是虚拟地址，最终要通过地址映射映射到物理地址），使得这块物理内存对内核和对用户均可见，减少用户态和内核态之间的数据交换。内核可以直接看到epoll监听的句柄，效率高。**
+
 先来看看三个epoll的函数接口：
 
 #### epoll_create
@@ -191,13 +194,16 @@ struct epoll_event {
  - EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
  - EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
 
+
+data则是一个联合体，能够存储fd或其它数据，我们需要根据自己的需求定制。events表示监控的事件的集合，是一个状态值，通过状态位来表示
+
 #### epoll_wait
 
 ``` c
 int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
 ```
 
-等待事件的产生，类似于select()调用。参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。
+等待事件的产生，类似于select()调用。参数events用来从内核得到事件的集合(数组)，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。
 
 所以我们仍然需要不停的循环去调用epoll_wait去等待用户中的请求，当用户请求到来的时候再去处理用户的事件。
 
@@ -226,3 +232,11 @@ if(nread == -1 && erron != EAGAIN){
 }
 
 ```
+
+
+#### Epoll简单原理(zwlj)
+epoll在服务器实现中非常搞笑，它首先通过内存映射，把user mode的一块内存和kernel mode的一段内存映射到同一个物理内存位置，免于fd表来回复制。
+
+epoll_create时会创建一个红黑树对文件描述符进行管理，所以我们每次添加事件(socket fd)时，由于用红黑树管理，效率非常高。
+
+如果有事件来临，epoll实现会将事件放进一个双向链表，每次只需检查这个双向链表就可以知道有没有事件来临。
