@@ -88,5 +88,3 @@ Container是YARN集群中**资源的抽象**，将NM上的资源进行量化，�
 
 #### ApplicationMaster(AM)
 AM主要管理和监控部署在YARN集群上的Application，以MapReduce为例，MapReduce Application是一个用来处理MapReduce计算的服务框架程序，为用户编写的MapReduce程序提供运行时支持。通常我们在编写的一个MapReduce程序可能包含多个Map Task或Reduce Task，而各个Task的运行管理与监控都是由这个MapReduce Application来负责，比如运行Task的资源申请，由AM向RM申请；启动/停止NM上某Task的对应的Container，由AM向NM请求来完成。
-
-下面，我们基于Hadoop 2.6.0的YARN源码，来探讨YARN内部实现原理。
