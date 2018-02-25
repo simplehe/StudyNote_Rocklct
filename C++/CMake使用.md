@@ -18,6 +18,11 @@ PROJECT(hello)                       # 项目名称
 aux_source_directory(. PROGRAM_SOURCE)  # 将当前目录所有文件添加到变量 PROGRAM_SOURCE 中
 
 add_executable(hello ${PROGRAM_SOURCE}) # 指定目标可执行文件 hello 的源代码文件为 PROGRAM_SOURCE
+
+add_library(hello  ${PROGRAM_SOURCE}) # 打包成静态库(.a)方便其他地方调用
+
+add_library(hello  SHARED ${PROGRAM_SOURCE}) # 打包成动态库(.so)方便其他地方调用
+
 ```
 
 以上示例，**add_executable就是最后会生成一个hello的可执行文件，而这个可执行文件的源文件是后者**
@@ -53,4 +58,14 @@ link_libraries(mylib1
 ```
 target_link_libraries(hello ../mylib1.a
     hello ../mylib2.so)
+```
+
+#### Set命令添加变量
+
+可以用set命令添加变量
+
+```
+set(COMMON_OBJ A B C)
+
+add_executable(Main ${COMMON_OBJ})
 ```
