@@ -32,6 +32,22 @@ HDFS和操作系统一样，也是 **按块** 来存储的，但块会比操作�
 
 - DataNode：**Slave节点**，奴隶，干活的。负责存储client发来的数据块block；执行数据块的读写操作。
 
+#### 文件写入机制
+
+![](image/hdfs0.jpg)
+
+一个文件被存储时，默认会备份3份。一份在client提交任务的客户端上，即机架1中的dataNode1，另外两份备份在不同的机架(防止同一机架都损毁，数据丢失)。但是备份2和备份3在同一机架中，降低延时和处理。
+
+文件写入时时流水线写入(Pipeline write)
+
+![](image/hdfs1.jpg)
+
+#### 心跳机制
+
+![](image/hdfs2.jpg)
+
+dataNode每隔3s发心跳包给DataNode，提供Block报告，告诉DataNode它有哪些block，最后NameNode来组织元数据，这样client询问时可正确回答。
+
 ### MapReduce模型
 MapReduce是一种分布式计算模型，由Google提出，主要用于搜索领域，解决海量数据的计算问题。
 
@@ -66,6 +82,8 @@ MapReduce有其局限性：
 
 ### YARN
 YARN是开源项目Hadoop的一个**资源管理系统**，最初设计是为了解决Hadoop中MapReduce计算框架中的资源管理问题，但是现在它已经是一个更加通用的资源管理系统，可以把MapReduce计算框架作为一个应用程序运行在YARN系统之上，通过YARN来管理资源。
+
+**zwlj:Yarn帮助我们管理各个节点的资源，我们不再需要指定哪些任务运行于哪些节点，我们只需要提交一个MapReduce任务，Yarn就会帮助我们分派这个任务，Map任务给谁，Reduce任务又给谁。下图中的Application Master就是用来协调任务信息。**
 
 YARN是基于Master/Slave模式的分布式架构，我们先看一下，YARN的架构设计，如图所示（来自官网文档）
 
