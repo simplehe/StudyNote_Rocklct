@@ -48,3 +48,6 @@ President会进入初始化，也就是就读取configure文件的配置，然�
 这个绑定的OnConnection方法的内容，就是继续在Connection上绑定一个OnData函数，当收到数据时立刻验证它是不是一个Command，如果是，那就进行相应的处理(交给之前绑定的handlers)，然后发回Response。
 
 这基本就是President的整体流程
+
+#### OnJoin
+收到Join命令时，说明有Manager节点请求加入President节点，这时President要保存Manager的信息，并且新创建一个CommandClient，然后这个Client会向Manager发送心跳信息 **HeartBeat**。每隔 **一秒钟** 发送一条心跳信息，超过 **五次** 超时没有回应，则被认为是失去了连接lost connection。
