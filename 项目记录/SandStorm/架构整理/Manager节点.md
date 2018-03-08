@@ -33,3 +33,29 @@ Connect方法会连接President节点，连接成功后就会调用回调函数�
 当这个Command发送成功时，必然会回收到一个Response类，我们将接受到的字节数据转换为Response。然后我们会调用回调方法处理这个Response。
 
 如果发现这个Response是Successful，那这时说明Manager正式加入集群了，此时调用Manager的StartListen(继承自CommandServer)开始监听。
+
+#### 收到HeartBeat
+Manager节点会定时收到President的心跳数据包，收到之后会需要回发Response。
+
+Response只需要把自己的Manager节点名发送回去即可。
+
+#### 收到同步数据SyncMetaData
+当收到来自President的SyncMetaData Command的时候，Manager就会从这个Command中抽取出发送过来的ManagerContext数据，然后把这个上下文设置到自己身上，并且把TaskInfo的数据也指向自身。
+
+然后就可以把这些数据交给OutputDispatcher了。
+
+之后会读取用户编写的so topology，然后进行一切初始化的工作。
+
+##### InitTaskFieldsMap
+初始化字段Map。
+
+将用户编写的topology读取出，然后一一取出declarer，把其中定义的字段vector设置到Manager的taskFields中。然后再把映射Map设置到taskFieldsMap中。
+
+##### InitExecutors
+把字段Map初始化完之后，开始初始化Executor。
+
+从ManagerContext处获得被指定了的Executor编号，然后获取相应的taskInfo。根据TaskInfo，从用户编写的topology处读取相对应的任务(Spout或是Bolt)，然后创建对应的OutputCollector(绑定对应的任务名,spout序号和消息队列)。之后把这个OutputCollector和具体任务Spout或者Bolt进行绑定。绑定完成后把这个任务放入具体的Executor容器中。
+
+初始化完各个Executor之后，就对设置了任务的Executor一一启动。
+
+启动之后的任务会一一处理数据，毫无疑问最终都会得到一个Tuple(数据流)，然后这个Tuple将会和TaskIndex打包成OutputItem之后被推送到OutputDipatcher的消息队列当中交给OutputDispatcher处理，OutputDispatcher会根据TaskIndex找到TaskInfo，然后计算出它的发送路径。
