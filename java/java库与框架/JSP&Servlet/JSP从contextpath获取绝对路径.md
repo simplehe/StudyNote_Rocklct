@@ -1,4 +1,4 @@
-## ${pageContext.request.contextPath} JSP取得路径
+## JSP取得路径
 
 
 ### 写相对路径
