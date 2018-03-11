@@ -17,6 +17,21 @@
 
  - StringBuilder：与 StringBuffer 类基本相同，都是可变字符换字符串序列，不同点是 **StringBuffer 是线程安全的，StringBuilder 是线程不安全的**。
 
+### StringBuffer 使用
+
+``` java
+public StringBuffer append(type t);//追加
+public StringBuffer insert(int offset,type t);//插入，在offset处加入类型为type的字符串
+
+public StringBuffer reverse(); //反转
+public StringBuffer delete(int start,int end); //删除
+
+char charAt(int index)
+//返回此序列中指定索引处的 char 值。
+void setCharAt(int index, char ch)
+//设置此序列中指定索引处的 char 值。
+```
+
 ### 使用场景
 使用 String 类的场景：在字符串**不经常变化**的场景中可以使用 String 类，例如常量的声明、少量的变量运算。
 
