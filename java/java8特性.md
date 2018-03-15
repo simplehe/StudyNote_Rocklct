@@ -124,6 +124,7 @@ Java 8 的类型注解扩展了注解使用的范围。在该版本之前，注�
 ### IO/NIO 的改进
 Java 8 对 IO/NIO 也做了一些改进。主要包括：改进了 java.nio.charset.Charset 的实现，使编码和解码的效率得以提升，也精简了 jre/lib/charsets.jar 包；优化了 String(byte[],*) 构造方法和 String.getBytes() 方法的性能；还增加了一些新的 IO/NIO 方法，使用这些方法可以从文件或者输入流中获取流（java.util.stream.Stream），通过对流的操作，可以简化文本行处理、目录遍历和文件查找。
 新增的 API 如下：
+
 BufferedReader.line(): 返回文本行的流 Stream\<String\>
 
 File.lines(Path, Charset):返回文本行的流 Stream\<String\>
