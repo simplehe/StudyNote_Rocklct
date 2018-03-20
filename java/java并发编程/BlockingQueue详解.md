@@ -160,4 +160,25 @@ PriorityBlockingQueue是一个没有边界的队列，它的排序规则和 java
 #### SynchronousQueue
 SynchronousQueue队列内部仅允许容纳一个元素。当一个线程插入一个元素后会被阻塞，除非这个元素被另一个线程消费。
 
-意思就是每个 put 必须等待一个 take，反之亦然。同步队列没有任何内部容量，甚至连一个队列的容量都没有。当一个任务在任务队列里的时候，如果生产者不把这个任务带走,那么这个任务将会一直卡在这个队列里，别的任务也进不了。
+意思就是每个 put **必须等待一个 take**，反之亦然。同步队列没有任何内部容量，甚至连一个队列的容量都没有。当一个任务在任务队列里的时候，如果生产者不把这个任务带走,那么这个任务将会一直卡在这个队列里，别的任务也进不了。
+
+SynchronousQueue和BlockingQueue的区别：在没有消费者的情况下，长度为1的阻塞队列**可以让生产者生产1个商品并存储在阻塞队列中**；而**同步队列不允许生产者进行生产**。可以看到同步队列有这样的特性：producer waits until consumer is ready, consumer waits until producer is ready。
+
+SynchronousQueue主要用于CachedThreadPool - 线程池无限大（MAX INT），等待队列长度为1
+
+``` java
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue<Runnable>());
+}
+```
+
+
+CachedThreadPool对任务的处理策略是提交的任务会立即分配一个线程进行执行，线程池中线程数量会随着任务数的变化自动扩张和缩减，在任务执行时间无限延长的极端情况下会创建过多的线程。
+
+Java 6的SynchronousQueue的实现采用了一种性能更好的无锁算法 — **扩展的“Dual stack and Dual queue”算法**。性能比Java5的实现有较大提升。
+
+SynchronousQueue有一个fair选项，如果fair为true，称为fair模式，否则就是unfair模式。fair模式使用一个先进先出的队列保存生产者或者消费者线程，unfair模式则使用一个后进先出的栈保存。
+
+SynchronousQueue通过将入队出队的线程绑定到队列的节点上，并借助LockSupport的park()和unpark()实现等待，先到达的线程A需调用LockSupport的park()方法将当前线程进入阻塞状态，知道另一个与之匹配的线程B调用LockSupport.unpark(Thread)来唤醒在该节点上等待的线程A。
