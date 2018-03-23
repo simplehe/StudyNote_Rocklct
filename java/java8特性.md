@@ -84,7 +84,7 @@ int count = (int)((Stream) list.stream().parallel()).sorted().count();
 long end = System.nanoTime();//获取系统结束排序的时间点
 long ms = TimeUnit.NANOSECONDS.toMillis(end-start);//得到并行排序所用的时间
 System.out.println(ms+”ms”);
-串行输出为 1200ms，并行输出为 800ms。可见，并行排序的时间相比较串行排序时间要少不少。
+//串行输出为 1200ms，并行输出为 800ms。可见，并行排序的时间相比较串行排序时间要少不少。
 ```
 
 #### 中间操作
