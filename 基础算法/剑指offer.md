@@ -1,6 +1,6 @@
 # 剑指offer
 
-## 3. 数组中重复的数字
+## 数组中重复的数字
 
 ### 题目描述
 
@@ -60,7 +60,7 @@ int isRep(int a[],int n){
 }
 ```
 
-## 4. 二维数组中的查找
+## 二维数组中的查找
 
 ### 题目描述
 在一个二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
@@ -90,7 +90,7 @@ public boolean Find(int target, int [][] array) {
 }
 ```
 
-## 5. 替换空格
+## 替换空格
 请实现一个函数，将一个字符串中的空格替换成“%20”。例如，当字符串为 We Are Happy. 则经过替换之后的字符串为 We%20Are%20Happy。
 
 
@@ -120,7 +120,7 @@ public String replaceSpace(StringBuffer str) {
 }
 ```
 
-### 6. 从尾到头打印链表
+### 从尾到头打印链表
 如果允许改动链表，则遍历过程中进行链表反转，如果不允许，则用数组记录，最后反转数组，或用栈操作。
 
 ``` java
@@ -143,7 +143,7 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
 }
 ```
 
-### 7. 重建二叉树
+### 重建二叉树
 根据二叉树的前序遍历和中序遍历的结果，重建出该二叉树。
 
 **zwlj:比较经典，需要注意**
@@ -168,4 +168,121 @@ private TreeNode reConstructBinaryTree(int[] pre, int preL, int preR, int[] in, 
     root.right = reConstructBinaryTree(pre, preL + leftTreeSize + 1, preR, in, inL + leftTreeSize + 1, inR);
     return root;
 }
+```
+
+### 树的子结构
+输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+思路：递归对比当前的节点是不是B的根节点,如果符合就递归左右子树判段是否相同。注意B可能只是A中间的一段，所以如果发现B走完，A还没走完，说明B是A的子树。
+
+
+``` c++
+class Solution {
+public:
+    bool HasSubtree(TreeNode* pRoot1, TreeNode* pRoot2)
+    {
+        if(pRoot2 == NULL) return false;
+        if(pRoot1 == NULL) return false;
+
+        if(checkTree(pRoot1,pRoot2)) return true;
+
+        bool leftSub = HasSubtree(pRoot1->left,pRoot2);
+        if(leftSub) return true;
+        bool rightSub = HasSubtree(pRoot1->right,pRoot2);
+        if(rightSub) return true;
+
+        return false;
+
+    }
+
+    bool checkTree(TreeNode* root1, TreeNode* root2){
+        if(root2==NULL) return true;
+        if(root1==NULL) return false;
+        if(root1->val != root2->val) return false;
+
+        return checkTree(root1->left,root2->left)&&checkTree(root1->right,root2->right);
+
+    }
+
+};
+```
+
+
+### 包含min函数的栈
+定义栈的数据结构，请在该类型中实现一个能够得到栈最小元素的min函数
+
+思路：要维护两个栈，一个普通的数据栈，一个min栈。普通栈做普通的栈功能用，数据压入时两边同步压栈。
+
+push原则是，如果min栈为空，则压。否则如果新数小于等于min的栈顶，也压。大数则不做处理。最后惊奇的发现，pop数时，只要判断弹出的数是不是等于min栈顶，如果是则同步弹出即可维护。
+
+Min栈很巧妙的维护了一段数里的局部小值，所以当一些大数弹出的时候，min不需操作也不受影响。
+
+![](image/offer0.jpg)
+
+``` c++
+class Solution {
+public:
+    stack<int> st,stmin;
+
+    void push(int value) {
+        st.push(value);
+        if(stmin.empty()){
+            stmin.push(value);
+        }else{
+            int v = stmin.top();
+            if(value<=v) stmin.push(value);
+        }
+    }
+    void pop() {
+        int v = st.top();
+        st.pop();
+        if(v == stmin.top()){
+            stmin.pop();
+        }
+    }
+    int top() {
+        return st.top();
+    }
+    int min() {
+        return stmin.top();
+    }
+};
+```
+
+
+### 复杂链表的复制
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+
+思路：要利用哈希，首先遍历一遍原链表，创建新链表（赋值label和next），用map关联对应结点；再遍历一遍，更新新链表的random指针。
+
+``` c++
+class Solution {
+public:
+    RandomListNode* Clone(RandomListNode* pHead)
+    {
+        if(pHead==NULL) return NULL;
+ 
+        map<RandomListNode*,RandomListNode*> m;
+        RandomListNode* pHead1 = pHead;
+        RandomListNode* pHead2 = new RandomListNode(pHead1->label);
+        RandomListNode* newHead = pHead2;
+        m[pHead1] = pHead2;
+        while(pHead1){
+            if(pHead1->next) pHead2->next = new RandomListNode(pHead1->next->label);
+            else pHead2->next = NULL;
+            pHead1 = pHead1->next;
+            pHead2 = pHead2->next;
+            m[pHead1] = pHead2;
+        }
+ 
+        pHead1 = pHead;
+        pHead2 = newHead;
+        while(pHead1){
+            pHead2->random = m[pHead1->random];
+            pHead1 = pHead1->next;
+            pHead2 = pHead2->next;
+        }
+        return newHead;
+    }
+};
 ```
