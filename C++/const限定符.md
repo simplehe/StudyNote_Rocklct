@@ -3,6 +3,7 @@
 Const 是C++中常用的类型修饰符,常类型是指使用类型修饰符const说明的类型，常类型的变量或对象的**值是不能被更新的**。
 
 const修饰符修饰的变量和引用类型的变量一样，**必须被初始化**，初始值**可以是复杂的表达式**。
+.
 
 ### 编译时初始化
 
@@ -85,7 +86,7 @@ const double *cptr=&pi; // right
 double dval = 3.14;
 double eval = 3;
 const double *cptr = &dval;
-*cptr = &eval;//can do this
+cptr = &eval;//can do this
 ```
 
 如上代码，我们可以随时改变指向常量的指针的值，而且**指向非const都完全没问题**。

@@ -238,7 +238,7 @@ if(nread == -1 && erron != EAGAIN){
 
 
 #### Epoll简单原理(zwlj)
-epoll在服务器实现中非常搞笑，它首先通过内存映射，把user mode的一块内存和kernel mode的一段内存映射到同一个物理内存位置，免于fd表来回复制。
+epoll在服务器实现中非常高效，它首先通过内存映射，把user mode的一块内存和kernel mode的一段内存映射到同一个物理内存位置，免于fd表来回复制。
 
 epoll_create时会创建一个红黑树对文件描述符进行管理，所以我们每次添加事件(socket fd)时，由于用红黑树管理，效率非常高。
 
