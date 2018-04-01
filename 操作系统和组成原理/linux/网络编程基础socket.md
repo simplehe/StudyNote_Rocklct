@@ -168,6 +168,19 @@ ssize_t read(int fd, void *buf, size_t count);
 
 如果send函数copy数据成功，就返回实际copy的字节数，如果send在copy数据时出现错误，那么send就返回SOCKET_ERROR；如果send在等待协议传送数据时网络断开的话，那么send函数也返回SOCKET_ERROR。
 
+当调用该函数时，send先比较待发送数据的长度len和套接字socket的发送缓冲的长度.
+
+ - 如果len大于socket的发送缓冲区的长度，该函数返回SOCKET_ERROR；
+
+ - 如果len小于或者等于socket的发送缓冲区的长度，那么send先检查协议,是否正在发送sockey的发送缓冲中的数据，如果是就等待协议把数据发送完
+
+ - 如果协议还没有开始发送socket的发送缓冲中的数据或者,socket的发送缓冲中没有数据
+   - 那么**send就比较socket的发送缓冲区的剩余空间和len，看看剩余位置够不够发**，如果len大于剩余空间大小send就一直等待协议把s的发送缓冲中的数据发送完(等到位置够)
+
+   - 如果len小于剩余 空间大小send就仅仅把buf中的数据copy到剩余空间里（注意并不是send把socket的发送缓冲中的数据传到连接的另一端的，而是协议传的，send仅仅是把buf中的数据copy到s的发送缓冲区的剩余空间里）。
+
+如果send函数copy数据成功，就返回实际copy的字节数，如果send在copy数据时出现错误，那么send就返回SOCKET_ERROR；如果send在等待协议传送数据时网络断开的话，那么send函数也返回SOCKET_ERROR。
+
 **要注意send函数把buf中的数据成功copy到s的发送缓冲的剩余空间里后它就返回了**，但是此时这些数据并不一定马上被传到连接的另一端。如果协议在后续的传送过程中出现网络错误的话，**那么下一个Socket相关的函数就会返回SOCKET_ERROR**。（每一个除send外的Socket函数在执 行的最开始总要先等待套接字的发送缓冲中的数据被协议传送完毕才能继续，如果在等待时出现网络错误，那么该Socket函数就返回 SOCKET_ERROR）
 
 ### recv函数
