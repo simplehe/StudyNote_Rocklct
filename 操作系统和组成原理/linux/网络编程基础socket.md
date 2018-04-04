@@ -190,3 +190,10 @@ int recv( SOCKET s, char FAR *buf, int len, int flags);
 ```
 
 注意：在Unix系统下，如果recv函数在等待协议接收数据时网络断开了，那么调用recv的进程会接收到一个SIGPIPE信号，进程对该信号的默认处理是进程终止。
+
+### 常见socket error
+ - ECONNREFUSED(111):   没有这个端口
+ - **EAGAIN(11): buffer已满**
+ - EPIPE(32): 客户端断掉了
+ - ECONNRESET（104）:   客户端先可以正常连接服务端，并可以进行数据收发，但当客户端突然掉电，即没有正常的关掉网络资源，重启后，客户端还是可以连接服务端，但是发送（send函数）数据给服务端时， send函数返回－1，捕捉errno为104，即ECONNRESET。
+ - ENOBUFS(105): 例如：使用udp发送>=128K的消息会报ENOBUFS的错误
