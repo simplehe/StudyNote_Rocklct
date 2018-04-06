@@ -15,6 +15,11 @@ Concurrent Programming in Java 的作者 Doug Lea 编写了一个极其优秀的
 
 总之便是分成了Executor一块体系，Future一块体系，BlockingQueue一块体系等等。
 
+从整体上来看concurrent包的整体实现图如下图所示：
+
+![](image/juc3.png)
+
+
 下图是juc包的功能结构，也就是把JUC包按照功能分成以下几个部分。
 
 ![](image/juc.jpg)

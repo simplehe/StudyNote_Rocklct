@@ -61,7 +61,61 @@ CHM适用于做cache,在程序启动时初始化，之后可以被多个请求�
 
 因此，使用synchronized相较于ReentrantLock的性能会持平甚至在某些情况更优
 
+ConcurrentHashMap在1.8中的实现，相比于1.7的版本基本上全部都变掉了。首先，取消了Segment分段锁的数据结构，取而代之的是数组+链表（红黑树）的结构。而对于锁的粒度，调整为对每个数组元素加锁（Node）。然后是定位节点的hash算法被简化了，这样带来的弊端是Hash冲突会加剧。因此在链表节点数量大于8时，会将链表转化为红黑树进行存储。这样一来，查询的时间复杂度就会由原先的O(n)变为O(logN)。下面是其基本结构：
+
+![](image/chm1.png)
+
 **zwlj：简而言之，就是在HashMap进行插入的时候，如果发现对应的哈希位置没有节点，那就用CAS添加。如果有节点(链表头结点或者是红黑树的根节点)，那就用synchronize加锁然后进行操作。**
+
+#### 并发扩容机制
+jdk8中，采用**多线程扩容**。整个扩容过程，通过**CAS设置sizeCtl**，transferIndex等变量协调多个线程进行并发扩容。
+
+扩容期间，将table数组中的元素 迁移到 nextTable。
+
+``` java
+/**
+ * The next table to use; non-null only while resizing.
+   扩容时，将table中的元素迁移至nextTable . 扩容时非空
+ */
+private transient volatile Node<K,V>[] nextTable;
+
+```
+
+**多线程之间，以volatile的方式读取sizeCtl属性，来判断ConcurrentHashMap当前所处的状态。通过cas设置sizeCtl属性，告知其他线程ConcurrentHashMap的状态变更。**
+
+``` java
+private transient volatile int sizeCtl;
+```
+
+不同状态，sizeCtl所代表的含义也有所不同。
+
+未初始化：
+ - sizeCtl=0：表示没有指定初始容量。
+ - sizeCtl>0：表示初始容量。
+
+初始化中：
+ - sizeCtl=-1,标记作用，告知其他线程，正在初始化
+
+正常状态：
+ - sizeCtl=0.75n ,扩容阈值
+
+扩容中:
+ - sizeCtl < 0 : 表示有其他线程正在执行扩容
+ - sizeCtl = (resizeStamp(n) << RESIZE_STAMP_SHIFT) + 2 :表示此时只有一个线程在执行扩容
+
+ConcurrentHashMap的状态图如下：
+
+![](image/chm0.png)
+
+**扩容时机：**
+
+ - 当前容量超过阈值(默认0.75n)
+ - 当链表中元素个数超过默认设定（8个），当数组的大小还未超过64的时候，此时进行数组的扩容，如果超过则将链表转化成红黑树
+ - 当发现其他线程扩容时，帮其扩容
+
+zwlj：总而言之便是，concurrentHashMap达到扩容时机是，便会有扩容线程产生帮助其扩容，主要原理就是产生一个新的table数组，然后将原来数组的元素迁移过去。扩容过的节点会被标记成ForwardingNode，这样别的线程来put的时候就会知道此时有线程在扩容。
+
+
 
 ### CopyOnWrite容器
 CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是**先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器**。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。
