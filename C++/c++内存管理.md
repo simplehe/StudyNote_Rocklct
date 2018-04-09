@@ -132,6 +132,8 @@ zwlj:也就是说，对于对象，new的时候对象会自动调用构造函数
 
 　　**所以我们不要企图用malloc/free来完成动态对象的内存管理**，应该用new/delete。由于**内部数据类型的“对象”没有构造与析构的过程，对它们而言malloc/free和new/delete是等价的**。
 
+**所以必须要注意，采用malloc创建的对象，内部成员对象和实例方法都不能访问。不过static修饰的成员可以访问。**
+
 　　既然new/delete的功能完全覆盖了malloc/free，为什么C++不把malloc/free淘汰出局呢？这是因为C++程序经常要调用C函数，而C程序只能用malloc/free管理动态内存。
 
 　　如果用free释放“new创建的动态对象”，那么该对象因无法执行析构函数而可能导致程序出错。如果用delete释放“malloc申请的动态内存”，结果也会导致程序出错，但是该程序的可读性很差。所以new/delete必须配对使用，malloc/free也一样。

@@ -30,6 +30,8 @@ public abstract class AbstractQueuedSynchronizer extends
 
 **队列将线程封装到了Node里面**，并封装了阻塞线程和解除阻塞的操作。这个队列的本质是双向链表。Node的插入和移除都是要保证原子性的，**使用的是CAS来操作**。这个Node还封装了**线程的状态**，用字段**waitStatus**表示
 
+zwlj：其实就是一个线程排队队列，按照一定的规则(公平锁和非公平锁)，线程可以获得锁，获得不到锁的就要阻塞并且再队列里排队。
+
 每个节点中， 除了存储了当前线程，前后节点的引用以外，还有一个**waitStatus变量**，用于描述节点当前的状态。多线程并发执行时，队列中会有多个节点存在，这个waitStatus其实代表对应线程的状态：有的线程可能获取锁因为某些原因放弃竞争；有的线程在等待满足条件，满足之后才能执行等等。一共有4中状态：
 
  - CANCELLED 取消状态
@@ -37,6 +39,8 @@ public abstract class AbstractQueuedSynchronizer extends
  - CONDITION 等待条件状态
  - PROPAGATE 状态需要向后传播
 
+#### 可重入锁的实现
+内部会有个status变量做记录，当同一个线程再次获得锁的时候，就把statue变量累加并获得锁，方法退出时，变量减一，到达0值时则释放锁。
 
 ### 成员函数
 
