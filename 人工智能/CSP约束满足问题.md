@@ -47,9 +47,11 @@ zwlj：其实CSP问题就是我们在搜索算法中常用的剪枝。我们在�
 先默认了每一行只有一个皇后，然后X就是每一行的皇后摆在哪一列。Qi代表第i行的皇后排在哪一列，那么约束也可以写成如上形式。
 
 ### CSP优化回溯搜索
-核心就是filtering和forward checking
+核心就是filtering和ordering
 
-filtering无非就是检测还没有赋值的节点进行下一步赋值(赋值顺序的问题)，forward checking就是回溯与之前已赋值节点的相容性。
+filtering意在检测出变量相容失败。核心过程有forward checking(回溯以前节点检测相容性)，constraint propagation(修改值域传播约束)
+
+Ordering无非就是检测还没有赋值的节点进行下一步赋值(赋值顺序的问题)
 
 下面看看几种变量取值顺序问题
 
