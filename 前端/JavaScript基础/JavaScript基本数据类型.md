@@ -12,12 +12,12 @@ null是空指针，undefined未定义。
 ### 提一下数组
 数组不是一个基本类型，而是一个对象，也就是Array。或者定义的时候也可以以诸如"\[3,5,6\]",这样的形式。
 
-观察了一下数组的prototype原型。可以知道
+观察了一下数组的prototype原型(见js原型继承笔记)。可以知道
 
 ``` javascript
-Array.prototype;// []
+Array.prototype;// [] Array其实是个函数对象，有prototype属性
 
-[].prototype // undefined
+[].prototype // undefined,因为实例数组不是函数，没有prototype方法
 
 [].__proto__ // []
 
@@ -25,7 +25,7 @@ Array.prototype;// []
 
 ```
 
-对于上面这些是要搞清楚的，首先Array的原型被链接到一个“\[\]”里，这显得有些奇怪，但是这个"\[\]"其实跟我们定义的空数组“\[\]”有些不同，这个才是真的数组(__proto__被链接到Object对象)，而不应该理解为空数组，他的__proto__属性链接到了Object上。而我们的实例空数组，__proto__属性链接到Array的prototype真数组\[\]上，所以才会显得有点像原型链循环了。
+对于上面这些是要搞清楚的，首先Array的原型被链接到一个“\[\]”里，这显得有些奇怪，但是这个"\[\]"其实跟我们定义的空数组“\[\]”有些不同，这个才是真的数组(\_\_proto\_\_被链接到Object对象)，而不应该理解为空数组，他的\_\_proto\_\_属性链接到了Object上。而我们的实例空数组，\_\_proto\_\_属性链接到Array的prototype真数组\[\]上，所以才会显得有点像原型链循环了。
 
 ![](image/type4.png)
 
@@ -291,5 +291,3 @@ function _instanceof(A, B) {
 
 
 instanceof在判断对象是不是数组，Data，正则等时很好用。
-
-#### 原型链方法
