@@ -173,6 +173,13 @@ require("!style!css!less!bootstrap/less/bootstrap.less");
 
 可见require css模块以后，js中是动态生成了style标签，并且每一个css都自动生成一个style标签括起来。
 
+### loaders
+刚才module里其实已经说得很清楚了，loader就是webpack的一种组件(也是根据npm管理，要先用npm来安装[比如先`npm install less-loader style-loader`])
+
+通过使用不同的loader，webpack有能力调用外部的脚本或工具，实现对不同格式的文件的处理，比如说分析转换scss为css，或者把下一代的JS文件（ES6，ES7)转换为现代浏览器兼容的JS文件，对React的开发而言，合适的Loaders可以把React的中用到的JSX文件转换为JS文件。
+
+Loaders需要单独安装并且需要在webpack.config.js中的modules关键字下进行配置,就跟之前讲解module的时候一样。
+
 ### 插件（Plugins）
 插件（Plugins）是用来拓展Webpack功能的，它们会在整个构建过程中生效，执行相关的任务。Loaders和Plugins常常被弄混，但是他们其实是完全不同的东西，可以这么来说，loaders是在打包构建过程中用来处理源文件的（JSX，Scss，Less..），一次处理一个，插件并不直接操作单个文件，它直接对整个构建过程其作用。
 
