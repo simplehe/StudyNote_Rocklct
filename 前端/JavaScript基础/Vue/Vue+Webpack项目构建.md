@@ -76,3 +76,18 @@ npm run dev
  - template里面最外层必须是只有一个容器
  - script 中的 export default {} 即导出这个组件，外部可以引用。
  - style 中的 lang 指额外表示支持的语言可以让编辑器识别,scoped 指这里写的css只适用于该组件。
+
+
+### router目录
+结合webpack构建出的项目结构，src下的router目录，用来配置页面组件跳转的路由逻辑，也就是vue-router相关的代码。
+
+### 项目结构进一步观察
+主项目下有个index.html文件，这个基本上就是整个vue app的入口。进入src目录，main.js就是主js文件，被index.html直接引入。main.js也是所有vue组件的入口。
+
+在main.js下，我们导入了vue，App,router
+
+![](image/vue1.png)
+
+vue是库，全局实例。App只是我们注册的其中一个组件(大组件)，router则是路由，帮助我们处理跳转逻辑(vue-router)
+
+vue实例里，绑定了一个App组件，tempate里则是很直接的把App组件拿来用了(template里是如何渲染)。
