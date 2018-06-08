@@ -29,3 +29,52 @@ server.listen(3000);
  3. close：当服务器关闭时，触发事件（注意不是在用户断开连接时）
 
 request事件是最常用的，而参数req和res分别是http.IncomingMessage和http.ServerResponse的实例
+
+### 常用模块
+路由解析经常用到一些模块。
+
+比如解析URL需要用到Node.js提供的url模块，它使用起来非常简单，通过parse()将一个字符串解析为一个Url对象：
+
+``` js
+'use strict';
+
+var url = require('url');
+
+console.log(url.parse('http://user:pass@host.com:8080/path/to/file?query=string#hash'));
+
+```
+
+```
+
+结果如下：
+Url {
+  protocol: 'http:',
+  slashes: true,
+  auth: 'user:pass',
+  host: 'host.com:8080',
+  port: '8080',
+  hostname: 'host.com',
+  hash: '#hash',
+  search: '?query=string',
+  query: 'query=string',
+  pathname: '/path/to/file',
+  path: '/path/to/file?query=string',
+  href: 'http://user:pass@host.com:8080/path/to/file?query=string#hash'
+}
+
+```
+
+处理本地文件目录需要使用Node.js提供的path模块，它可以方便地构造目录：
+
+``` js
+'use strict';
+
+var path = require('path');
+
+// 解析当前目录:
+var workDir = path.resolve('.'); // '/Users/michael'
+
+// 组合完整的文件路径:当前目录+'pub'+'index.html':
+var filePath = path.join(workDir, 'pub', 'index.html');
+// '/Users/michael/pub/index.html'
+```

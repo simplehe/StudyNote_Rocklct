@@ -4,14 +4,14 @@
 app.use(function *(){
     //我是首页
     if(this.path==='/'){
-    
+
     }
 });
 
 app.use(function *(){
     //我是详情页
     if(this.path==='/detail'){
-    
+
     }
 });
 ```
@@ -67,7 +67,7 @@ app
 ```
 
 router也有use方法
-```
+``` js
 // session middleware will run before authorize
 router
   .use(session())
