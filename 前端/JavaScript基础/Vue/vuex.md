@@ -18,3 +18,55 @@ Vuex 是一个专为 Vue.js 应用程序开发的 **状态管理模式**。它�
 ![](image/vuex1.png)
 
 所以vuex就是在管理一个全局的状态
+
+### store的创建
+每一个 Vuex 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)。
+
+vuex是响应式的，store中的状态改变，那么对应的view也会改变。但是我们要显示地commit mutation(变化)。
+
+我们可以简单创建store
+
+``` js
+// 如果在模块化构建系统中，请确保在开头调用了 Vue.use(Vuex)
+
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+
+store.commit('increment')
+
+console.log(store.state.count) // -> 1
+```
+
+### vue中获取state
+ Vuex 的状态存储是响应式的，从 store 实例中读取状态最简单的方法就是在计算属性中返回某个状态
+
+ ``` js
+ // 创建一个 Counter 组件
+const Counter = {
+  template: `<div>{{ count }}</div>`,
+  computed: {
+    count () {
+      return store.state.count
+    }
+  }
+}
+```
+
+Vuex 通过 store 选项，提供了一种机制将状态从根组件“注入”到每一个子组件中（需调用 Vue.use(Vuex)）：
+
+通过在根实例中注册 store 选项，该 store 实例会注入到根组件下的所有子组件中，且子组件能通过 this.$store 访问到。让我们更新下 Counter 的实现：
+
+### Getter
+getter用于从store中派生状态。
+
+Vuex 允许我们在 store 中定义“getter”（可以认为是 store 的计算属性）。就像计算属性一样，getter 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
+
+zwlj：也就是在vuex帮我们整合了逻辑，不需要我们在多个组件中，再写一次computed。
