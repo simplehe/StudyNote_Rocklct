@@ -146,3 +146,86 @@ import('./Foo.vue') // 返回 Promise
 ```
 
 zwlj:注意这里用的是import函数。
+
+### 导航守卫
+vue-router允许在路由导航前后触发某些事件。
+
+比如我们可以使用 router.beforeEach 注册一个全局前置守卫
+
+``` js
+const router = new VueRouter({ ... })
+
+router.beforeEach((to, from, next) => {
+  // ...
+})
+```
+
+当一个导航触发时，全局前置守卫按照创建顺序调用。守卫是异步解析执行，此时 **导航在所有守卫 resolve 完之前一直处于 等待中**。
+
+每个守卫方法接收三个参数：
+
+ - to: Route: 即将要进入的目标 路由对象
+
+ - from: Route: 当前导航正要离开的路由
+
+ - next: Function: 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
+
+其中next有几种调用方式需要注意：
+
+
+- next(): 进行管道中的下一个钩子。**如果全部钩子执行完了，则导航的状态就是 confirmed (确认的)。**
+
+- next(false): 中断当前的导航。如果浏览器的 URL 改变了 (可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 from 路由对应的地址。
+
+- next('/') 或者 next({ path: '/' }): 跳转到一个不同的地址。当前的导航被中断，然后进行一个新的导航。你可以向 next 传递任意位置对象，且允许设置诸如 replace: true、name: 'home' 之类的选项以及任何用在 router-link 的 to prop 或 router.push 中的选项。
+
+- next(error): (2.4.0+) 如果传入 next 的参数是一个 Error 实例，则导航会被终止且该错误会被传递给 router.onError() 注册过的回调。
+
+### 路由元信息
+定义路由时，可以配置meta标签
+
+我们称呼 routes 配置中的每个路由对象为 **路由记录**。路由记录可以是嵌套的，因此，当一个路由匹配成功后，他可能匹配多个路由记录
+
+``` js
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/foo',
+      component: Foo,
+      children: [
+        {
+          path: 'bar',
+          component: Bar,
+          // a meta field
+          meta: { requiresAuth: true }
+        }
+      ]
+    }
+  ]
+})
+```
+
+根据上面的路由配置，/foo/bar 这个 URL 将会匹配父路由记录以及子路由记录。也就是说此事URL匹配到了两条路由。
+
+根据这个原理，我们就可以在路由中放一点元信息meta，然后结合守卫导航，我们来做一些check，好比权限校验，如下：
+
+``` js
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!auth.loggedIn()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // 确保一定要调用 next()
+  }
+})
+```
+
+用一个全局的路由导航，在跳转之前，match一下这个路由的权限，看看meta里写着要不要auth认证。如果需要，且当前是未认证状态，则跳到login页面。否则都正常next
