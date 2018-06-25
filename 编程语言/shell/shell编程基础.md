@@ -172,6 +172,3 @@ $ command > /dev/null 2>&1
 
 ### source命令
 包含外部代码，用source命令。
-
-``` bash
-```
