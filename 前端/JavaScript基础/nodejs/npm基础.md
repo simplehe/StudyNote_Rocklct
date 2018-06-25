@@ -48,3 +48,20 @@ npm install packagename
 那么只会安装dependencies，如果想要安装devDependencies，需要输入
 
 npm install packagename --dev  
+
+### package-lock.json
+在执行npm install的时候，有时会在当前目录里生成一个package-lock.json文件。
+
+这个文件，记录了 **当前实际安装的各个pacakge来源和版本**。
+
+要注意的，是package.json文件中，定义的依赖条目可能是这样的
+
+```
+"dependencies": {
+"@types/node": "^8.0.33",
+}
+```
+
+这里可以看到有个^符号，这个符号表示向后兼容，也就是说版本超过8.0.33就行，实际可能下载的是8.0.35.
+
+大多数时候，这样都没问题。但有时，下载最新的可能会导致一些不兼容的问题。因此npm提供了生成lock文件的功能，方便保存快照，之后如果遇到问题，根据这个lock文件下载具体版本即可。
