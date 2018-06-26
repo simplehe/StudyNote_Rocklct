@@ -70,6 +70,55 @@ Shell 传递参数实例！
 
 ![](image/bash0.png)
 
+#### getopts
+如果你的脚本参数非常多，那使用上面的这种方式就非常不合适，你无法清楚地记得每个位置对应的是什么参数。所以，我们可以使用bash内置的getopts
+
+``` bash
+while getopts 'h:j:m:u' OPT; do
+    case $OPT in
+        j) JAVA_DIR="$OPTARG";;
+        m) MAVEN_DIR="$OPTARG";;
+        u) upload="true";;
+        h) usage;;
+        ?) usage;;
+    esac
+done
+```
+
+上述脚本假如是test.sh,在调用时如下
+
+```
+test.sh [-j JAVA_DIR] [-m MAVEN_DIR]
+```
+
+getopts后面跟的字符串就是参数列表，每个字母代表一个选项，如果字母后面跟一个：就表示这个选项还会有一个值，比如上面例子中对应的-j /home/soft/java 和-m /home/soft/maven 。而getopts字符串中没有跟随:的字母就是开关型选项，不需要指定值，等同于true/false,只要带上了这个参数就是true。
+
+getopts识别出各个选项之后，就可以配合case进行操作。操作中，有两个"常量"，一个是OPTARG，用来获取当前选项的值；另外一个就是OPTIND，表示当前选项在参数列表中的位移。case的最后一项是?，用来识别非法的选项，进行相应的操作，我们的脚本中输出了帮助信息。
+
+**OPTIND的初始值为1，当选项参数处理结束后，其指向剩余参数的第一个。**
+
+``` bash
+while getopts 'j:m:u' OPT; do
+    case $OPT in
+        j) JAVA_DIR="$OPTARG";;
+        m) MAVEN_DIR="$OPTARG";;
+        u) upload="true";;
+        h) usage;;
+        ?) usage;;
+    esac
+done
+
+echo $OPTIND
+shift $(($OPTIND - 1))
+echo $1
+
+---------------
+$ sh test.sh -j /home/soft/java -m /home/soft/maven otherargs
+1
+5
+otherargs
+```
+
 ### 数组
 Bash Shell 只支持一维数组（不支持多维数组），初始化时不需要定义数组大小
 
