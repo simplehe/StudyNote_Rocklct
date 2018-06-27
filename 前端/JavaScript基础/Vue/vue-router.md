@@ -118,6 +118,39 @@ const router = new VueRouter({
 
 同时，如果想保证/user/id也能访问到一个组件，那就要设定空的子路由
 
+
+需要注意的是，父组件的template中要有对应的router-view标签用以显示子组件。这样当跳转到子路由的时候，会先显示父组件，再去渲染父组件里的子组件送到router-view那里去。
+
+#### 命名视图
+有时候想同时 (同级) 展示多个视图，而不是嵌套展示，例如创建一个布局，有 sidebar (侧导航) 和 main (主内容) 两个视图，这个时候命名视图就派上用场了。你可以在界面中拥有多个单独命名的视图，而不是只有一个单独的出口。如果 router-view 没有设置名字，那么默认为 default。
+
+``` html
+<router-view class="view one"></router-view>
+<router-view class="view two" name="a"></router-view>
+<router-view class="view three" name="b"></router-view>
+```
+
+几个router-view，然后其中两个被赋予了name属性a和b。
+
+最后传递ab组件。
+
+``` js
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      components: {
+        default: Foo,
+        a: Bar,
+        b: Baz
+      }
+    }
+  ]
+})
+```
+
+这样做的好处是，如果你不传递进ab组件，那么对应的ab router-view就会被忽略而不会被渲染。构建单页面的特殊页面时，比较好用。比如我管理后台有典型的侧边栏sidebar，footer，header。但是我也有登录页面，这时不写死`<sidebar>` `<footer>`,而是通过命名视图，当要跳转到登录页面时，我就不传递sidebar组件，这样特殊的登录页就可以直接被展示。
+
 ### 编程式导航
 除了使用router-link来点击跳转，我们还可以用代码实现跳转。
 
