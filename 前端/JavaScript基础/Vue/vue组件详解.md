@@ -65,6 +65,72 @@ new Vue({
 
 **注意，一个props被定义以后，就可以通过组件html标签的自定义特性传入** 所以通过设定html属性给到组件，很方便。
 
+### 插槽slot
+Vue 实现了一套内容分发的 API，将 `<slot>` 元素作为承载分发内容的出口。
+
+它允许你像这样合成组件:
+
+当我们写父组件的template时，假如我们想调用一个叫navigation-link的组件，我们这样写：
+
+``` html
+<navigation-link url="/profile">
+  Your Profile
+</navigation-link>
+```
+
+在navigation-link组件中，我们这样写template
+
+``` html
+<a
+  v-bind:href="url"
+  class="nav-link"
+>
+  <slot></slot>
+</a>
+```
+
+在navigation-link中放了一个slot，那么我们在父组件中调用此组件时，内部的内容就会被传递到这个slot当中。当组件渲染的时候，这个 `<slot>` 元素将会被替换为“Your Profile”。
+
+**插槽内可以包含任何模板代码，包括 HTML**
+
+#### 具名插槽
+有时候我们可以给slot命名，这样在调用的时候就可以更具体：
+
+``` html
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
+
+因此父组件在传递内容的时候，就需要用template标签来指定了：
+
+``` html
+<base-layout>
+  <template slot="header">
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template slot="footer">
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+如此一来，template中的内容就会传递到子组件base-layout里对应的slot。没有标记template的内容默认传递给无名slot。
+
+
+
 ### emit方法进行事件传递
 结合v-on指令，我们可以用vue内建的 **$emit** 方法来向父组件传递一个事件。
 
