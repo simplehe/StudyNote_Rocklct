@@ -130,6 +130,42 @@ Vue 实现了一套内容分发的 API，将 `<slot>` 元素作为承载分发�
 如此一来，template中的内容就会传递到子组件base-layout里对应的slot。没有标记template的内容默认传递给无名slot。
 
 
+#### 插槽作用域
+在插槽传递的时候，有时候我们希望能从子组件获取数据。
+
+比如我们有一个子组件：
+
+``` html
+<ul>
+  <li
+    v-for="todo in todos"
+    v-bind:key="todo.id"
+  >
+    <!-- 我们为每个 todo 准备了一个插槽，-->
+    <!-- 将 `todo` 对象作为一个插槽的 prop 传入。-->
+    <slot v-bind:todo="todo">
+      <!-- 回退的内容 -->
+      {{ todo.text }}
+    </slot>
+  </li>
+</ul>
+```
+
+这里准备了一个插槽slot，当然就是希望我们从父组件插东西近来。但是我们的目的是，插进来的内容可以拿到这个子组件里的todo对象。因此父组件我们要定义一个scope。
+
+``` html
+<todo-list v-bind:todos="todos">
+  <!-- 将 `slotProps` 定义为插槽作用域的名字 -->
+  <template slot-scope="slotProps">
+    <!-- 为待办项自定义一个模板，-->
+    <!-- 通过 `slotProps` 定制每个待办项。-->
+    <span v-if="slotProps.todo.isComplete">✓</span>
+    {{ slotProps.todo.text }}
+  </template>
+</todo-list>
+```
+
+如上，在父组件调用子组件的时候，我们template显然是传递了一个东西进去。但是这个template里定义了一个slpt-scope，意思就是，子组件里的slot标签是接受了对象的，而这个对象的作用域姑且把它命名为slotProps。这样我们就可以通过slotProps.xxx来获取到想要的属性了。
 
 ### emit方法进行事件传递
 结合v-on指令，我们可以用vue内建的 **$emit** 方法来向父组件传递一个事件。
