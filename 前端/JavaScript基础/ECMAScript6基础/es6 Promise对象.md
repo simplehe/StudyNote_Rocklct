@@ -160,3 +160,25 @@ console.log('one');
 ```
 
 上面代码中，setTimeout(fn, 0)在下一轮“事件循环”开始时执行，Promise.resolve()在本轮“事件循环”结束时执行，console.log(’one‘)则是立即执行，因此最先输出。
+
+#### promise.all
+当需要多个promise执行完成后才继续执行某个人物，那就要用到promise.then.
+
+Promise.all方法用于将多个 Promise 实例，包装成一个新的 Promise 实例。
+
+``` js
+// 生成一个Promise对象的数组
+const promises = [2, 3, 5, 7, 11, 13].map(function (id) {
+  return getJSON('/post/' + id + ".json");
+});
+
+Promise.all(promises).then(function (posts) {
+  // ...
+}).catch(function(reason){
+  // ...
+});
+```
+
+上面代码中，promises是包含 6 个 Promise 实例的数组，只有这 6 个实例的状态都变成fulfilled，或者其中有一个变为rejected，才会调用Promise.all方法后面的回调函数。
+
+promise数组里，每一个promise完成后的返回值组成一个数组传递给all后面的回调函数。
