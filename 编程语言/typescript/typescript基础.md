@@ -236,7 +236,7 @@ console.log(Days[6] === "Sat"); // true
 #### 类Class
 TypeScript中类的定义基本参考了ES6/7中Class的规范，所以可以去查阅相关章节。
 
-![ECMAScript 6 入门 - Class](http://es6.ruanyifeng.com/#docs/class)
+[ECMAScript 6 入门 - Class](http://es6.ruanyifeng.com/#docs/class)
 
 TypeScript实现了implement，extends，泛型等特性。跟Java C#等面向对象语言的设计高度相似，熟悉面向对象编程模型的人可以快速上手。
 
@@ -275,13 +275,13 @@ npm install @types/jquery --save-dev
 ```
 
 ### 总结
-以上便是TypeScript入门所要了解的基础知识，
+以上便是TypeScript入门所要了解的基础知识，进阶的内容将通过实践来进行加深。
 
 ### 参考
-![TypeScript入门教程](https://legacy.gitbook.com/book/xcatliu/typescript-tutorial)
+[TypeScript入门教程](https://legacy.gitbook.com/book/xcatliu/typescript-tutorial)
 
-![知乎-如何评价TypeScript](https://www.zhihu.com/question/21879449/answer/57236840)
+[知乎-如何评价TypeScript](https://www.zhihu.com/question/21879449/answer/57236840)
 
-![TypeScript VS JavaScript 深度对比](https://juejin.im/entry/5a52ed336fb9a01cbd586f9f)
+[TypeScript VS JavaScript 深度对比](https://juejin.im/entry/5a52ed336fb9a01cbd586f9f)
 
-![ECMAScript 6 入门 - Class](http://es6.ruanyifeng.com/#docs/class)
+[ECMAScript 6 入门 - Class](http://es6.ruanyifeng.com/#docs/class)
