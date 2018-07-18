@@ -44,7 +44,11 @@
 ![](image/bitcoin4.png)
 
 #### WSL上编译代码
-打开doc下的build-windows.md文档，我们跟着教程来走。在wsl下完成以下操作
+打开doc下的build-windows.md文档，我们跟着教程来走。
+
+一点需要注意的是，在build-windows文档下，**wsl的版本是ubuntu1804**，所以安装的时候千万不要搞错装成了16，否则可能有问题。
+
+在wsl下完成以下操作
 
 First, install the general dependencies:
 
@@ -70,6 +74,10 @@ cd ..
 CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
 make
 ```
+
+我们按照步骤，进入到depends目录执行make HOST=x86_64-w64-mingw32,这里会消耗很长一段时间，而且容易出错，要注意，记得确保WSL Ubuntu版本在1804。
+
+depends
 
 ### 参考
 [比特币源码研读](https://juejin.im/post/5ae0722e6fb9a07aa047ad88)
