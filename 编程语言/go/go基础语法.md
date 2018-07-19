@@ -207,6 +207,26 @@ if(ptr != nil)     /* ptr 不是空指针 */
 if(ptr == nil)    /* ptr 是空指针 */
 ```
 
+### Map(集合)&Slice(切片)
+Map 是一种无序的键值对的集合。
+
+``` go
+countryCapitalMap [ "France" ] = "Paris"
+```
+
+Slice切片是对数组的抽象，本质其实就是一个动态数组，类似于js或者python中的list。
+
+切片不需要说明长度。
+或使用make()函数来创建切片
+
+``` go
+var slice1 []type = make([]type, len)
+
+也可以简写为
+
+slice1 := make([]type, len)
+```
+
 ### range
 Go 语言中 range 关键字用于 for 循环中迭代数组(array)、切片(slice)、通道(channel)或集合(map)的元素。
 
@@ -221,6 +241,11 @@ for _, num := range nums {
 }
 fmt.Println("sum:", sum)
 ```
+
+### 内建函数make
+内建函数make(T, args)与new(T)的用途不一样。**它只用来创建slice，map和channel，并且返回一个初始化的(而不是置零)，类型为T的值（而不是*T）**
+
+所以map,Slice,channel经常用make函数来创建。
 
 ### struct和函数方法
 go没有class这个关键字。实现面向对象一般都是用struct结构体。而想定义成员方法，那就通过在定义函数时加关键字实现。
