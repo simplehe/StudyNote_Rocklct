@@ -77,9 +77,11 @@ make
 
 我们按照步骤，进入到depends目录执行make HOST=x86_64-w64-mingw32,这里会消耗很长一段时间，而且容易出错，要注意，记得确保WSL Ubuntu版本在1804。
 
-依赖都安装完以后，按顺序执行命令，最后make，等待一段时间以后就安装好啦！
+依赖都安装完以后，按顺序执行命令，最后make，等待一段时间以后就make好啦！
 
 ![](image/bitcoin5.png)
+
+接下来我们可以用make install来安装
 
 ### 参考
 [比特币源码研读](https://juejin.im/post/5ae0722e6fb9a07aa047ad88)
