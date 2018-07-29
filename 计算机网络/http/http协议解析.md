@@ -38,6 +38,23 @@ HTTP1.0定义了**三种**请求方法： GET, POST 和 HEAD方法。
 ### HTTP首部字段
 HTTP首部字段根据实际用途被分为**通用首部字段**、**请求首部字段**、**响应首部字段** 和 **实体首部字段**。
 
+除此之外，根据功能，首部字段还可以分为End-to-end 首部和Hop-by-hop 首部
+
+ - **端到端首部（End-to-end Header）**分在此类别中的首部会转发给请求 / 响应对应的最终接收目标，且必须保存在由缓存生成的响应中，另外规 定它必须被转发。
+ - **逐跳首部（Hop-by-hop Header）**分在此类别中的首部只对单次转发有效，会因通过缓存或代理而不再转发。HTTP/1.1 和之后版本中，如果要使用 hop-by-hop 首部，需提供 Connection 首部字段。
+
+#### 逐跳首部
+
+下面列举了 HTTP/1.1 中的逐跳首部字段。除这 8 个首部字段之外，其他所有字段都属于端到端首部。
+ - Connection
+ - Keep-Alive
+ - Proxy-Authenticate
+ - Proxy-Authorization
+ - Trailer
+ - TE
+ - Transfer-Encoding
+ - Upgrade
+
 #### 通用首部字段
 请求报文和响应报文两方都会使用的首部。
 
@@ -46,10 +63,41 @@ HTTP首部字段根据实际用途被分为**通用首部字段**、**请求首�
  - Date 创建报文的日期时间
  - Pragma 报文指令
  - Trailer 报文末端的首部一览
- - Transfer-Encoding 指定报文主体的传输编码方式
+ - **Transfer-Encoding** 指定报文主体的传输编码方式
  - Upgrade 升级为其他协议
  - Via 代理服务器的相关信息
  - Warning 错误通知
+
+##### 有关TransferEncoding
+
+对于非持久连接，浏览器可以通过连接是否关闭来界定请求或响应实体的边界；而对于持久连接，这种方法显然不奏效。
+
+要解决上面这个问题，最容易想到的办法就是计算实体长度，并通过头部告诉对方。这就要用到 Content-Length 了。由于 Content-Length 字段必须真实反映实体长度，但实际应用中，**有些时候实体长度并没那么好获得**，例如实体来自于网络文件，或者由动态语言生成。这时候要想准确获取长度，**只能开一个足够大的 buffer，等内容全部生成好再计算。但这样做一方面需要更大的内存开销，另一方面也会让客户端等更久**。
+
+Transfer-Encoding 正是用来解决上面这个问题的。历史上 Transfer-Encoding 可以有多种取值，为此还引入了一个名为 TE 的头部用来协商采用何种传输编码。**但是最新的 HTTP 规范里，只定义了一种传输编码：分块编码（chunked）**。
+
+在头部加入 Transfer-Encoding: chunked 之后，就代表这个报文采用了分块编码。这时，报文中的实体需要改为用一系列分块来传输。每个分块包含十六进制的长度值和数据，**长度值独占一行，长度不包括它结尾的 CRLF（\\r\\n），也不包括分块数据结尾的 CRLF**。**最后一个分块长度值必须为 0**，对应的分块数据没有内容，表示实体结束。
+
+比如服务端中发送数据时：
+
+``` js
+sock.write('HTTP/1.1 200 OK\r\n');
+sock.write('Transfer-Encoding: chunked\r\n');
+sock.write('\r\n');
+
+sock.write('b\r\n');
+sock.write('01234567890\r\n');
+
+sock.write('5\r\n');
+sock.write('12345\r\n');
+
+sock.write('0\r\n');
+sock.write('\r\n');
+```
+
+上面代码是发送一个包的过程，先发送了一个b，也就是十六进制11个字节的chunk，然后发了一个5字节的chunk，最后再发一个0长度包。
+
+**这样就可以一边产生数据，一边发送chunk到客户端，而不需要一口气产生数据算好长度再发送。**
 
 #### 请求首部字段（Request Header Fields）
 
@@ -108,6 +156,7 @@ TE 传输编码的优先级
  - Expires 实体主体过期的日期时间
  - Last-Modified 资源的最后修改日期时间
 
+
 ##### cookie相关
 
  - **Set-Cookie 当服务器准备开始管理客户端的状态时,会事先告知各种信息。**
@@ -127,6 +176,10 @@ expires=Tue, 05 Jul 2014 08:22:31 GMT; => path=/;domain=.hackr.jp;
    - domain=域名作为Cookie适用对象的域名,若不指定则默认为创建Cookie服务器的域名。
    - secure仅在HTTPS安全通信时,才可以发送Cookie.
    - **HttpOnly加以限制，使JavaScript脚本无法获取Cookie。**
+
+
+#### 非HTTP/1.1首部字段
+
 
 ### HTTP响应状态码
 
