@@ -83,5 +83,33 @@ make
 
 接下来我们可以用make install来安装
 
+```
+make install DESTDIR=/mnt/f/bitcoin
+```
+
+接着我们就可以看到比特币编译后的可执行文件被安装到对应目录
+
+![](image/bitcoin6.png)
+
+### 可执行文件
+编译完以后，可以在bin目录里，看到几个可执行文件。
+
+![](image/bitcoin7.png)
+
+#### bitcoin-qt
+
+![](image/bitcoin8.png)
+
+bitcoin-qt是比特币的图形界面客户端，第一次启动会要让你同步节点，可以看到现在已经要大约200+G了。
+
+#### bitcoind
+源码分析的重点，是bitcoin的简洁命令行版。
+
+#### bitcoin-cli
+Bitcoind的一个功能完备的RPC客户端，可以通过它在命令行查询某个区块信息，交易信息等
+
+#### bitcoin-tx
+/src/bitcoind 比特币交易处理模块，可以进行交易的查询和创建
+
 ### 参考
 [比特币源码研读](https://juejin.im/post/5ae0722e6fb9a07aa047ad88)
