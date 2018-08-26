@@ -66,3 +66,21 @@ void fcn(){
   auto j = f(); // j=43
 }
 ```
+
+### 泛型Lambda
+auto 关键字不能够用在参数表里，这是因为这样的写法会与模板的功能产生冲突。但是 Lambda 表达式并不是普通函数，所以 Lambda 表达式并不能够模板化。这就为我们造成了一定程度上的麻烦：参数表不能够泛化，必须明确参数表类型。
+
+幸运的是，这种麻烦只存在于 C++11 中，从 C++14 开始，Lambda 函数的形式参数可以使用 auto 关键字来产生意义上的泛型：
+
+
+``` c++
+void learn_lambda_func_4(){
+    auto generic = [](auto x, auto y) {
+        return x+y;
+    };
+
+    std::cout << "generic(1,2) = " << generic(1, 2) << std::endl;
+    std::cout << "generic(1.1,2.2) = " << generic(1.1, 2.2) << std::endl;
+}
+
+```
