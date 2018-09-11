@@ -263,6 +263,45 @@ prx.test().then(success,error).done();
 
 然后在服务管理标签里，就看到对应的APP名称下，我们的Server已经存在了。
 
+#### 服务端代码的修改
+发布到服务端的server代码，由于要接受tars node 平台的一些自动配置必须从环境读取配置文件。
+
+那么入口文件的代码就要改成这个样子：
+
+``` js
+let Tars  = require("@tars/rpc");
+let TestRock = require("./TestServiceRockImp").TestRock;
+
+let svr;
+
+let servantName = "test.testNodeR.testRone";
+
+console.log("before start!");
+
+if(process.env.TARS_CONFIG){
+    svr = new Tars.server();
+    svr.initialize(process.env.TARS_CONFIG, function (server){
+        server.addServant(TestRock.RockServiceImp, servantName);
+
+        console.log("tars server started from Process");
+    });
+    svr.start();
+    console.log("start server from process");
+
+}else {
+    svr = Tars.server.createServer(TestRock.RockServiceImp);
+    svr.start({
+        name     : "test.testNodeR.service",
+        servant  : "test.testNodeR.testRone",
+        endpoint : "tcp -h 127.0.0.1 -p 14002 -t 10000",
+        protocol : "tars",
+        maxconns : 200000
+    });
+
+    console.log("start local server");
+}
+```
+
 #### 打包服务端
 打包我们的服务端文件，需要一个名为@tars/deploy的命令行工具。我们需要npm -g全局安装。然后在目录里执行打包命令，
 
@@ -284,6 +323,12 @@ node_modules可以删掉，避免重复打包。注意package.json的入口文�
 ![](image/tars7.png)
 
 点击发布选中节点，发布tgz包。便部署成功，客户端可以根据节点ip和进程进行调用。
+
+
+#### 管理Servant
+一个服务下是可以有多个Servant实例的,有多个Servant实例的好处就是收到请求的时候可以自动根据路由分发。
+
+可以add不同的Servant来应对具体的请求
 
 ### 参考
 [tars github](https://github.com/Tencent/Tars/blob/master/README.zh.md)
